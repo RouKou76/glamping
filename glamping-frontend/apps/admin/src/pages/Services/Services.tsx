@@ -55,11 +55,11 @@ export default function Services() {
       }
     }
     if (editService) {
-      const updated = { ...editService, ...payload, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription, booking: formBooking, bookingSlots: payload.fields.bookingSlots, bookingLimit: payload.fields.bookingLimit }
+      const updated = { ...editService, ...payload, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription, booking: formBooking, bookingSlots: payload.fields.bookingSlots, bookingLimit: payload.fields.bookingLimit, bookingSchedule: payload.fields.bookingSchedule }
       setServices(prev => prev.map(s => s.id === editService.id ? updated : s))
       apiPost(`/api/services/${editService.id}`, payload).catch(() => {})
     } else {
-      const newService: Service = { id: `cs-${Date.now()}`, ...payload, active: true, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription, booking: formBooking, bookingSlots: payload.fields.bookingSlots, bookingLimit: payload.fields.bookingLimit }
+      const newService: Service = { id: `cs-${Date.now()}`, ...payload, active: true, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription, booking: formBooking, bookingSlots: payload.fields.bookingSlots, bookingLimit: payload.fields.bookingLimit, bookingSchedule: payload.fields.bookingSchedule }
       setServices(prev => [...prev, newService])
       apiPost('/api/services', { ...payload, active: true }).catch(() => {})
     }
