@@ -39,6 +39,8 @@ export class CatalogService {
       current,
       previous,
       active: (active as 'current' | 'previous') || 'current',
+      currentExists: current ? existsSync(join(this.uploadsDir, current)) : false,
+      previousExists: previous ? existsSync(join(this.uploadsDir, previous)) : false,
     };
   }
 

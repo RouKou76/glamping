@@ -5,6 +5,8 @@ interface CatalogInfo {
   current: string | null
   previous: string | null
   active: 'current' | 'previous'
+  currentExists: boolean
+  previousExists: boolean
 }
 
 interface CatalogSectionProps {
@@ -60,11 +62,15 @@ function CatalogSection({ catalogId, title }: CatalogSectionProps) {
       <h3 className="text-lg font-bold text-gray-800 dark:text-white">{title}</h3>
 
       {data?.current && (
-        <div className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-white/10 rounded-2xl p-4 shadow-sm transition-colors space-y-3">
+        <div className={`bg-white dark:bg-[#1a1d27] border rounded-2xl p-4 shadow-sm transition-colors space-y-3 ${data.currentExists ? 'border-gray-100 dark:border-white/10' : 'border-red-300 dark:border-red-500/30'}`}>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 bg-red-100 dark:bg-red-500/20 rounded-xl flex items-center justify-center shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${data.currentExists ? 'bg-red-100 dark:bg-red-500/20' : 'bg-red-100 dark:bg-red-500/20'}`}>
+                {data.currentExists ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500"><circle cx="12" cy="12" r="10"/><line x1="15" x2="9" y1="9" y2="15"/><line x1="9" x2="15" y1="9" y2="15"/></svg>
+                )}
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-bold text-gray-800 dark:text-white">Текущая версия</p>
@@ -74,18 +80,25 @@ function CatalogSection({ catalogId, title }: CatalogSectionProps) {
             {data.active === 'current' ? (
               <span className="text-xs px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 font-bold">Активна</span>
             ) : (
-              <button onClick={() => handleSwitch('current')} className="text-xs px-2.5 py-1 rounded-lg border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">Сделать активной</button>
+              <button disabled={!data.currentExists} onClick={() => handleSwitch('current')} className="text-xs px-2.5 py-1 rounded-lg border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">Сделать активной</button>
             )}
           </div>
+          {!data.currentExists && (
+            <p className="text-xs text-red-500 dark:text-red-400">⚠ Файл не найден на сервере. Загрузите заново.</p>
+          )}
         </div>
       )}
 
       {data?.previous && (
-        <div className="bg-white dark:bg-[#1a1d27] border border-gray-100 dark:border-white/10 rounded-2xl p-4 shadow-sm transition-colors space-y-3">
+        <div className={`bg-white dark:bg-[#1a1d27] border rounded-2xl p-4 shadow-sm transition-colors space-y-3 ${data.previousExists ? 'border-gray-100 dark:border-white/10' : 'border-red-300 dark:border-red-500/30'}`}>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 bg-gray-100 dark:bg-white/5 rounded-xl flex items-center justify-center shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-white/30"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${data.previousExists ? 'bg-gray-100 dark:bg-white/5' : 'bg-red-100 dark:bg-red-500/20'}`}>
+                {data.previousExists ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-white/30"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500"><circle cx="12" cy="12" r="10"/><line x1="15" x2="9" y1="9" y2="15"/><line x1="9" x2="15" y1="9" y2="15"/></svg>
+                )}
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-bold text-gray-800 dark:text-white">Предыдущая версия</p>
@@ -95,9 +108,12 @@ function CatalogSection({ catalogId, title }: CatalogSectionProps) {
             {data.active === 'previous' ? (
               <span className="text-xs px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 font-bold">Активна</span>
             ) : (
-              <button onClick={() => handleSwitch('previous')} className="text-xs px-2.5 py-1 rounded-lg border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">Сделать активной</button>
+              <button disabled={!data.previousExists} onClick={() => handleSwitch('previous')} className="text-xs px-2.5 py-1 rounded-lg border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">Сделать активной</button>
             )}
           </div>
+          {!data.previousExists && (
+            <p className="text-xs text-red-500 dark:text-red-400">⚠ Файл не найден на сервере.</p>
+          )}
         </div>
       )}
 
