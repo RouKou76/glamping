@@ -94,7 +94,7 @@ const ClockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" heigh
 export default function Tickets() {
   const { data: apiTasks, refetch } = useApi<Task[]>('/api/tasks')
   const { data: apiHouses } = useApi<House[]>('/api/houses')
-  const { data: apiServices } = useApi<Service[]>('/api/services')
+  const { data: apiServices } = useApi<Service[]>('/api/services?showInactive=true')
   const { data: apiMenu } = useApi<{ id: string; subcat?: string }[]>('/api/menu')
   const [tickets, setTickets] = useState<Task[]>([])
   const [houses, setHouses] = useState<House[]>([])
