@@ -100,6 +100,7 @@ export class TicketsService {
         location: dto.location,
         guestCount: dto.guestCount,
         items: dto.items as never,
+        priceFix: dto.priceFix,
         desiredAt: dto.desiredAt ? new Date(dto.desiredAt) : undefined,
         sessionId: dto.sessionId,
       },

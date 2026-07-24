@@ -95,4 +95,9 @@ export class CreateTicketDto {
   @IsString()
   @IsOptional()
   sessionId?: string;
+
+  @ApiPropertyOptional()
+  @IsInt()
+  @IsOptional()
+  priceFix?: number;
 }
