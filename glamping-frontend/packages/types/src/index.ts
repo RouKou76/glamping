@@ -92,6 +92,9 @@ export interface Service {
   icon?: string
   description?: string
   showDescription?: boolean
+  booking?: boolean
+  bookingSlots?: string[]
+  bookingLimit?: number
   jsonSchema?: Record<string, unknown>
   active: boolean
   assignedTo: AssignedRole

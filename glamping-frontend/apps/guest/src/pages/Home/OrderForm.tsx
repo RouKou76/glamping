@@ -16,8 +16,9 @@ export interface OrderStepTextarea { type: 'textarea'; key: string; label: strin
 export interface OrderStepMenu { type: 'menu'; key: string; items: MenuItem[]; required?: boolean }
 export interface OrderStepCatalog { type: 'catalog'; key: string; label: string; items: { id: string; name: string; price: number; isAvailable?: boolean }[]; required?: boolean }
 export interface OrderStepCity { type: 'city'; key: string; label: string; required?: boolean }
+export interface OrderStepSlot { type: 'slot'; key: string; label: string; serviceId: string; slots: { time: string; booked: number; limit: number }[]; required?: boolean }
 
-export type OrderStep = OrderStepDate | OrderStepTime | OrderStepSelect | OrderStepNumber | OrderStepText | OrderStepTextarea | OrderStepMenu | OrderStepCatalog | OrderStepCity
+export type OrderStep = OrderStepDate | OrderStepTime | OrderStepSelect | OrderStepNumber | OrderStepText | OrderStepTextarea | OrderStepMenu | OrderStepCatalog | OrderStepCity | OrderStepSlot
 
 interface OrderFormProps {
   open: boolean
@@ -82,6 +83,7 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
         if (!hasChecked) errors[s.key] = t('validation.selectDish')
       }
       else if (s.type === 'city') { if (!values[s.key]) errors[s.key] = t('validation.required') }
+      else if (s.type === 'slot') { if (!values[s.key]) errors[s.key] = t('validation.selectTime') }
     }
     return errors
   }
@@ -99,6 +101,21 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
   function toggleSubcat(subcat: string) { setCollapsedSubcats(prev => { const next = new Set(prev); next.has(subcat) ? next.delete(subcat) : next.add(subcat); return next }) }
   const [cooldown, setCooldown] = useState(0)
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [slotAvailability, setSlotAvailability] = useState<Record<string, { time: string; booked: number; limit: number }[]>>({})
+  const slotStep = steps.find(s => s.type === 'slot') as OrderStepSlot | undefined
+
+  useEffect(() => {
+    if (!slotStep || !values.date) return
+    const dateStr = values.date as string
+    fetch(`/api/services/${slotStep.serviceId}/availability?date=${dateStr}`)
+      .then(r => r.json())
+      .then(res => {
+        const data = res?.data ?? res
+        setSlotAvailability(prev => ({ ...prev, [slotStep.key]: data }))
+      })
+      .catch(() => {})
+    setVal('slot', undefined)
+  }, [slotStep?.serviceId, values.date])
 
   function setVal(key: string, value: unknown) {
     if (taskType === 'food' && key === 'time' && values.time) {
@@ -206,6 +223,10 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
       const dateStr = (values.date as string) || todayStr()
       payload.desiredAt = new Date(`${dateStr}T${values.time as string}:00`).toISOString()
     }
+    if (values.slot) {
+      const dateStr = (values.date as string) || todayStr()
+      payload.desiredAt = new Date(`${dateStr}T${values.slot as string}:00`).toISOString()
+    }
     if (taskType === 'food' && values.time) payload.period = getPeriodFromTime(values.time as string)
     if (values.location) payload.location = values.location
     if (values.city) {
@@ -273,6 +294,35 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
                 <p className="text-[10px] text-gray-400 dark:text-white/30 mt-2">{t('transfer.accuracyHint')}</p>
               </div>
             )
+            if (s.type === 'slot') {
+              const liveSlots = slotAvailability[s.key] ?? s.slots
+              return (
+              <div key={s.key}>
+                <label className="text-sm font-bold text-gray-600 dark:text-white/50 uppercase tracking-wider mb-2 block">{s.label}{s.required && ' *'}</label>
+                {liveSlots.length === 0 ? (
+                  <p className="text-sm text-gray-400 dark:text-white/40">{!values.date ? 'Сначала выберите дату' : 'Нет доступных слотов'}</p>
+                ) : (
+                <div className="space-y-2">
+                  {liveSlots.map(slot => {
+                    const remaining = slot.limit - slot.booked
+                    const isFull = remaining <= 0
+                    const isSelected = values[s.key] === slot.time
+                    return (
+                      <button key={slot.time} type="button" disabled={isFull}
+                        onClick={() => setVal(s.key, slot.time)}
+                        className={`w-full p-3 rounded-xl text-sm font-medium border transition-colors flex justify-between items-center ${isSelected ? 'bg-glamp-600 border-glamp-600 text-white' : isFull ? 'bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-400 dark:text-white/30 cursor-not-allowed' : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10'}`}>
+                        <span>{slot.time}</span>
+                        <span className={`text-xs ${isFull ? 'text-red-400' : remaining === 1 ? 'text-amber-500' : 'opacity-60'}`}>
+                          {isFull ? 'Занято' : remaining === slot.limit ? 'Свободно' : `${remaining} из ${slot.limit}`}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+                )}
+                {errors[s.key] && <ErrorMsg text={errors[s.key]} />}
+              </div>
+            )}
             if (s.type === 'date') return (
               <div key={s.key}>
                 <label className="text-sm font-bold text-gray-600 dark:text-white/50 uppercase tracking-wider mb-2 block">{s.label}{s.required && ' *'}</label>

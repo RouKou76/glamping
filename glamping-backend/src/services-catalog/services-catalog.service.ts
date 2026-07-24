@@ -24,6 +24,9 @@ export class ServicesCatalogService {
         icon: s.icon,
         description: (fields?.description as string) || undefined,
         showDescription: (fields?.showDescription as boolean) ?? false,
+        booking: (fields?.booking as boolean) ?? false,
+        bookingSlots: (fields?.bookingSlots as string[]) || [],
+        bookingLimit: (fields?.bookingLimit as number) ?? 1,
         jsonSchema: s.jsonSchema,
         active: s.active,
         assignedTo: s.assignedTo,
@@ -107,6 +110,40 @@ export class ServicesCatalogService {
       active: updated.active,
       assignedTo: updated.assignedTo,
     };
+  }
+
+  async getAvailability(serviceId: string, date: string) {
+    const service = await this.prisma.service.findUnique({ where: { id: serviceId } });
+    if (!service) throw new NotFoundException('Service not found');
+    const fields = service.fields as Record<string, unknown>;
+    const slots = (fields?.bookingSlots as string[]) || [];
+    const limit = (fields?.bookingLimit as number) ?? 1;
+
+    const startOfDay = new Date(date + 'T00:00:00');
+    const endOfDay = new Date(date + 'T23:59:59');
+
+    const booked = await this.prisma.ticket.findMany({
+      where: {
+        type: 'custom',
+        description: { startsWith: `[${service.name}]` },
+        status: { not: 'archived' },
+        desiredAt: { gte: startOfDay, lte: endOfDay },
+      },
+      select: { desiredAt: true },
+    });
+
+    const bookedByTime: Record<string, number> = {};
+    for (const t of booked) {
+      if (!t.desiredAt) continue;
+      const time = `${String(t.desiredAt.getHours()).padStart(2, '0')}:${String(t.desiredAt.getMinutes()).padStart(2, '0')}`;
+      bookedByTime[time] = (bookedByTime[time] || 0) + 1;
+    }
+
+    return slots.map((time) => ({
+      time,
+      booked: bookedByTime[time] || 0,
+      limit,
+    }));
   }
 
   async delete(id: string) {

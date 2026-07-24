@@ -59,6 +59,37 @@ export class TicketsService {
   }
 
   async create(dto: CreateTicketDto) {
+    if (dto.type === 'custom' && dto.desiredAt && dto.description) {
+      const bracketMatch = dto.description.match(/^\[(.+?)\]/);
+      const serviceName = bracketMatch ? bracketMatch[1] : null;
+      if (serviceName) {
+        const service = await this.prisma.service.findFirst({ where: { name: serviceName } });
+        if (service) {
+          const fields = service.fields as Record<string, unknown>;
+          if (fields?.booking) {
+            const limit = (fields.bookingLimit as number) ?? 1;
+            const desiredDate = new Date(dto.desiredAt);
+            const slotTime = `${String(desiredDate.getHours()).padStart(2, '0')}:${String(desiredDate.getMinutes()).padStart(2, '0')}`;
+            const slotStart = new Date(desiredDate); slotStart.setSeconds(0, 0);
+            const slotEnd = new Date(slotStart); slotEnd.setMinutes(slotEnd.getMinutes() + 1);
+            const startOfDay = new Date(desiredDate); startOfDay.setHours(0, 0, 0, 0);
+            const endOfDay = new Date(desiredDate); endOfDay.setHours(23, 59, 59, 999);
+            const count = await this.prisma.ticket.count({
+              where: {
+                type: 'custom',
+                description: { startsWith: `[${serviceName}]` },
+                status: { not: 'archived' },
+                desiredAt: { gte: slotStart, lt: slotEnd },
+              },
+            });
+            if (count >= limit) {
+              throw new Error(`Слот ${slotTime} уже занят. Попробуйте другое время.`);
+            }
+          }
+        }
+      }
+    }
+
     const ticket = await this.prisma.ticket.create({
       data: {
         houseId: dto.houseId,

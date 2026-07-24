@@ -78,7 +78,10 @@ export default function Home() {
 
   function buildServiceConfig(service: Service): { title: string; steps: OrderStep[]; message: string; serviceName: string; hint?: string } {
     const steps: OrderStep[] = []
-    if (service.requiresTime) {
+    if (service.booking) {
+      steps.push({ type: 'date', key: 'date', label: t('food.date') })
+      steps.push({ type: 'slot', key: 'slot', label: 'Выберите время', serviceId: service.id, slots: [], required: true })
+    } else if (service.requiresTime) {
       steps.push({ type: 'date', key: 'date', label: t('food.date') })
       steps.push({ type: 'time', key: 'time', label: t('food.time'), required: true })
     }

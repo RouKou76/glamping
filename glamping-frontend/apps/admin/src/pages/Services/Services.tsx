@@ -16,21 +16,34 @@ export default function Services() {
   const [formRequiresTime, setFormRequiresTime] = useState(true)
   const [formDescription, setFormDescription] = useState('')
   const [formShowDescription, setFormShowDescription] = useState(false)
+  const [formBooking, setFormBooking] = useState(false)
+  const [formBookingSlots, setFormBookingSlots] = useState('')
+  const [formBookingLimit, setFormBookingLimit] = useState(1)
   const [formErrors, setFormErrors] = useState<{ name?: string }>({})
 
-  function openAdd() { setEditService(null); setFormName(''); setFormPrice(''); setFormIcon(''); setFormRequiresTime(true); setFormDescription(''); setFormShowDescription(false); setShowForm(true) }
-  function openEdit(service: Service) { setEditService(service); setFormName(service.name); setFormPrice(service.priceInfo ?? ''); setFormIcon(service.icon ?? ''); setFormRequiresTime(service.requiresTime); setFormDescription(service.description ?? ''); setFormShowDescription(service.showDescription ?? false); setShowForm(true) }
+  function openAdd() { setEditService(null); setFormName(''); setFormPrice(''); setFormIcon(''); setFormRequiresTime(true); setFormDescription(''); setFormShowDescription(false); setFormBooking(false); setFormBookingSlots(''); setFormBookingLimit(1); setShowForm(true) }
+  function openEdit(service: Service) { setEditService(service); setFormName(service.name); setFormPrice(service.priceInfo ?? ''); setFormIcon(service.icon ?? ''); setFormRequiresTime(service.requiresTime); setFormDescription(service.description ?? ''); setFormShowDescription(service.showDescription ?? false); setFormBooking(service.booking ?? false); setFormBookingSlots(service.bookingSlots?.join(', ') ?? ''); setFormBookingLimit(service.bookingLimit ?? 1); setShowForm(true) }
 
   function handleSave() {
     if (!formName.trim()) { setFormErrors({ name: 'Введите название' }); return }
     setFormErrors({})
-    const payload = { name: formName.trim(), priceInfo: formPrice || undefined, icon: formIcon || undefined, assignedTo: 'admin' as const, fields: { requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription } }
+    const payload = {
+      name: formName.trim(), priceInfo: formPrice || undefined, icon: formIcon || undefined, assignedTo: 'admin' as const,
+      fields: {
+        requiresTime: formRequiresTime,
+        description: formDescription.trim() || undefined,
+        showDescription: formShowDescription,
+        booking: formBooking,
+        bookingSlots: formBooking ? formBookingSlots.split(',').map(s => s.trim()).filter(Boolean) : [],
+        bookingLimit: formBooking ? formBookingLimit : 1,
+      }
+    }
     if (editService) {
-      const updated = { ...editService, ...payload, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription }
+      const updated = { ...editService, ...payload, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription, booking: formBooking, bookingSlots: payload.fields.bookingSlots, bookingLimit: payload.fields.bookingLimit }
       setServices(prev => prev.map(s => s.id === editService.id ? updated : s))
       apiPost(`/api/services/${editService.id}`, payload).catch(() => {})
     } else {
-      const newService: Service = { id: `cs-${Date.now()}`, ...payload, active: true, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription }
+      const newService: Service = { id: `cs-${Date.now()}`, ...payload, active: true, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription, booking: formBooking, bookingSlots: payload.fields.bookingSlots, bookingLimit: payload.fields.bookingLimit }
       setServices(prev => [...prev, newService])
       apiPost('/api/services', { ...payload, active: true }).catch(() => {})
     }
@@ -93,6 +106,16 @@ export default function Services() {
               <span className="text-sm text-gray-600 dark:text-white/70">Показывать описание</span>
               <button onClick={() => setFormShowDescription(p => !p)} className={`w-12 h-6 rounded-full transition-colors relative ${formShowDescription ? 'bg-glamp-600' : 'bg-gray-300 dark:bg-white/10'}`}><span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formShowDescription ? 'left-7' : 'left-1'}`} /></button>
             </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-white/70">Бронирование</span>
+              <button onClick={() => setFormBooking(p => !p)} className={`w-12 h-6 rounded-full transition-colors relative ${formBooking ? 'bg-glamp-600' : 'bg-gray-300 dark:bg-white/10'}`}><span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formBooking ? 'left-7' : 'left-1'}`} /></button>
+            </div>
+            {formBooking && (
+              <>
+                <div><label className="text-sm font-bold text-gray-600 dark:text-white/60 mb-1 block">Слоты (через запятую)</label><input type="text" value={formBookingSlots} onChange={e => setFormBookingSlots(e.target.value)} placeholder="10:00, 14:00, 18:00" className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" /></div>
+                <div><label className="text-sm font-bold text-gray-600 dark:text-white/60 mb-1 block">Лимит на слот</label><input type="number" min={1} value={formBookingLimit} onChange={e => setFormBookingLimit(Number(e.target.value) || 1)} className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" /></div>
+              </>
+            )}
             <div className="grid grid-cols-2 gap-3 pt-2">
               <button onClick={() => setShowForm(false)} className="py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/50 text-sm font-medium hover:bg-gray-100 dark:hover:bg-white/5 transition-colors">Отмена</button>
               <button onClick={handleSave} disabled={!formName.trim()} className="py-2.5 rounded-xl bg-glamp-600 hover:bg-glamp-700 disabled:opacity-30 text-white text-sm font-bold transition-colors active:scale-95">{editService ? 'Сохранить' : 'Создать'}</button>

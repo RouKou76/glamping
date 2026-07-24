@@ -34,6 +34,17 @@ export class ServicesCatalogController {
     return this.servicesService.findAll(showInactive === 'true');
   }
 
+  @Get(':id/availability')
+  @Public()
+  @ApiOperation({ summary: 'Get booking availability for a service' })
+  @ApiQuery({ name: 'date', required: true })
+  async getAvailability(
+    @Param('id') id: string,
+    @Query('date') date: string,
+  ) {
+    return this.servicesService.getAvailability(id, date);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @RequirePermissions('manage_services')
