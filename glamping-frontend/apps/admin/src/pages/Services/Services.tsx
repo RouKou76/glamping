@@ -19,10 +19,11 @@ export default function Services() {
   const [formBooking, setFormBooking] = useState(false)
   const [formBookingSlots, setFormBookingSlots] = useState('')
   const [formBookingLimit, setFormBookingLimit] = useState(1)
+  const [formBookingSchedule, setFormBookingSchedule] = useState<{ date: string; slots: string }[]>([])
   const [formErrors, setFormErrors] = useState<{ name?: string }>({})
 
-  function openAdd() { setEditService(null); setFormName(''); setFormPrice(''); setFormIcon(''); setFormRequiresTime(true); setFormDescription(''); setFormShowDescription(false); setFormBooking(false); setFormBookingSlots(''); setFormBookingLimit(1); setShowForm(true) }
-  function openEdit(service: Service) { setEditService(service); setFormName(service.name); setFormPrice(service.priceInfo ?? ''); setFormIcon(service.icon ?? ''); setFormRequiresTime(service.requiresTime); setFormDescription(service.description ?? ''); setFormShowDescription(service.showDescription ?? false); setFormBooking(service.booking ?? false); setFormBookingSlots(service.bookingSlots?.join(', ') ?? ''); setFormBookingLimit(service.bookingLimit ?? 1); setShowForm(true) }
+  function openAdd() { setEditService(null); setFormName(''); setFormPrice(''); setFormIcon(''); setFormRequiresTime(true); setFormDescription(''); setFormShowDescription(false); setFormBooking(false); setFormBookingSlots(''); setFormBookingLimit(1); setFormBookingSchedule([]); setShowForm(true) }
+  function openEdit(service: Service) { setEditService(service); setFormName(service.name); setFormPrice(service.priceInfo ?? ''); setFormIcon(service.icon ?? ''); setFormRequiresTime(service.requiresTime); setFormDescription(service.description ?? ''); setFormShowDescription(service.showDescription ?? false); setFormBooking(service.booking ?? false); setFormBookingSlots(service.bookingSlots?.join(', ') ?? ''); setFormBookingLimit(service.bookingLimit ?? 1); setFormBookingSchedule((service.bookingSchedule ?? []).map(s => ({ date: s.date, slots: s.slots.join(', ') }))); setShowForm(true) }
 
   function handleSave() {
     if (!formName.trim()) { setFormErrors({ name: 'Введите название' }); return }
@@ -36,6 +37,7 @@ export default function Services() {
         booking: formBooking,
         bookingSlots: formBooking ? formBookingSlots.split(',').map(s => s.trim()).filter(Boolean) : [],
         bookingLimit: formBooking ? formBookingLimit : 1,
+        bookingSchedule: formBooking ? formBookingSchedule.map(s => ({ date: s.date, slots: s.slots.split(',').map(x => x.trim()).filter(Boolean) })) : [],
       }
     }
     if (editService) {
@@ -114,6 +116,20 @@ export default function Services() {
               <>
                 <div><label className="text-sm font-bold text-gray-600 dark:text-white/60 mb-1 block">Слоты (через запятую)</label><input type="text" value={formBookingSlots} onChange={e => setFormBookingSlots(e.target.value)} placeholder="10:00, 14:00, 18:00" className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" /></div>
                 <div><label className="text-sm font-bold text-gray-600 dark:text-white/60 mb-1 block">Лимит на слот</label><input type="number" min={1} value={formBookingLimit} onChange={e => setFormBookingLimit(Number(e.target.value) || 1)} className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" /></div>
+                <div>
+                  <label className="text-sm font-bold text-gray-600 dark:text-white/60 mb-1 block">Расписание по датам</label>
+                  <p className="text-[10px] text-gray-400 dark:text-white/30 mb-2">Если не указано — используются слоты по умолчанию</p>
+                  <div className="space-y-2">
+                    {formBookingSchedule.map((entry, i) => (
+                      <div key={i} className="flex gap-2 items-center">
+                        <input type="date" value={entry.date} onChange={e => { const next = [...formBookingSchedule]; next[i] = { ...next[i], date: e.target.value }; setFormBookingSchedule(next) }} className="flex-1 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" />
+                        <input type="text" value={entry.slots} onChange={e => { const next = [...formBookingSchedule]; next[i] = { ...next[i], slots: e.target.value }; setFormBookingSchedule(next) }} placeholder="10:00, 14:00" className="flex-1 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" />
+                        <button onClick={() => setFormBookingSchedule(prev => prev.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-600 shrink-0 p-1">✕</button>
+                      </div>
+                    ))}
+                  </div>
+                  <button onClick={() => setFormBookingSchedule(prev => [...prev, { date: '', slots: '' }])} className="mt-2 text-xs text-glamp-600 dark:text-glamp-400 font-medium hover:underline">+ Добавить дату</button>
+                </div>
               </>
             )}
             <div className="grid grid-cols-2 gap-3 pt-2">

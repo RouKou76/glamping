@@ -103,6 +103,11 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [slotAvailability, setSlotAvailability] = useState<Record<string, { time: string; booked: number; limit: number }[]>>({})
   const slotStep = steps.find(s => s.type === 'slot') as OrderStepSlot | undefined
+  const hasDateStep = steps.some(s => s.type === 'date' || s.type === 'slot')
+
+  useEffect(() => {
+    if (hasDateStep && !values.date) setVal('date', todayStr())
+  }, [])
 
   useEffect(() => {
     if (!slotStep || !values.date) return

@@ -27,6 +27,7 @@ export class ServicesCatalogService {
         booking: (fields?.booking as boolean) ?? false,
         bookingSlots: (fields?.bookingSlots as string[]) || [],
         bookingLimit: (fields?.bookingLimit as number) ?? 1,
+        bookingSchedule: (fields?.bookingSchedule as { date: string; slots: string[] }[]) || [],
         jsonSchema: s.jsonSchema,
         active: s.active,
         assignedTo: s.assignedTo,
@@ -116,8 +117,11 @@ export class ServicesCatalogService {
     const service = await this.prisma.service.findUnique({ where: { id: serviceId } });
     if (!service) throw new NotFoundException('Service not found');
     const fields = service.fields as Record<string, unknown>;
-    const slots = (fields?.bookingSlots as string[]) || [];
+    const defaultSlots = (fields?.bookingSlots as string[]) || [];
     const limit = (fields?.bookingLimit as number) ?? 1;
+    const schedule = (fields?.bookingSchedule as { date: string; slots: string[] }[]) || [];
+    const scheduleEntry = schedule.find(s => s.date === date);
+    const slots = scheduleEntry ? scheduleEntry.slots : defaultSlots;
 
     const startOfDay = new Date(date + 'T00:00:00');
     const endOfDay = new Date(date + 'T23:59:59');

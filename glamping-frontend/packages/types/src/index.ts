@@ -96,6 +96,7 @@ export interface Service {
   booking?: boolean
   bookingSlots?: string[]
   bookingLimit?: number
+  bookingSchedule?: { date: string; slots: string[] }[]
   jsonSchema?: Record<string, unknown>
   active: boolean
   assignedTo: AssignedRole
