@@ -156,5 +156,8 @@
     "full": "Full",
     "available": "Available",
     "remaining": "{{count}} of {{limit}}"
+  },
+  "order": {
+    "comment": "Comment"
   }
 }

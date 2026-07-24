@@ -156,5 +156,8 @@
     "full": "已满",
     "available": "可预约",
     "remaining": "{{count}} / {{limit}}"
+  },
+  "order": {
+    "comment": "备注"
   }
 }

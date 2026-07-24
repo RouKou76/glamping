@@ -85,7 +85,7 @@ export default function Home() {
       steps.push({ type: 'date', key: 'date', label: t('food.date') })
       steps.push({ type: 'time', key: 'time', label: t('food.time'), required: true })
     }
-    steps.push({ type: 'textarea', key: 'comment', label: 'Комментарий', placeholder: service.name })
+    steps.push({ type: 'textarea', key: 'comment', label: t('order.comment'), placeholder: service.name })
     const hint = service.showDescription && service.description ? service.description : undefined
     return { title: service.name, steps, message: `Заявка «${service.name}» отправлена`, serviceName: service.name, hint }
   }

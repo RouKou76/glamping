@@ -156,5 +156,8 @@
     "full": "Занято",
     "available": "Свободно",
     "remaining": "{{count}} из {{limit}}"
+  },
+  "order": {
+    "comment": "Комментарий"
   }
 }
