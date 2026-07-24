@@ -69,8 +69,8 @@ export class CreateTicketDto {
   @IsOptional()
   assignedTo?: string;
 
-  @ApiPropertyOptional({ enum: ['cabin', 'terrace', 'gazebo'] })
-  @IsEnum(['cabin', 'terrace', 'gazebo'])
+  @ApiPropertyOptional()
+  @IsString()
   @IsOptional()
   location?: string;
 
