@@ -107,9 +107,11 @@ export default function Tickets() {
 
   const availableTypes = useMemo(() => {
     const builtIn = ['food', 'minibar', 'transfer', 'cleaning', 'towels']
-    const customServices = apiServices?.filter(s => s.active).map(s => `custom:${s.name}`) ?? []
+    const customServices = statusFilter === 'archived'
+      ? (apiServices?.map(s => `custom:${s.name}`) ?? [])
+      : (apiServices?.filter(s => s.active).map(s => `custom:${s.name}`) ?? [])
     return [...builtIn, ...customServices]
-  }, [apiServices])
+  }, [apiServices, statusFilter])
 
   function getCustomServiceName(description?: string): string | null {
     if (!description) return null
