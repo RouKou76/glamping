@@ -87,7 +87,7 @@ function getExtraInfo(ticket: Task): { icon: React.ReactNode; text: string }[] {
   const info: { icon: React.ReactNode; text: string }[] = []
   if (ticket.location && ticket.type !== 'transfer') info.push({ icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>, text: LOCATION_LABELS[ticket.location] ?? ticket.location })
   if (ticket.guestCount) info.push({ icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>, text: `${ticket.guestCount} чел.` })
-  if (ticket.priceFix) info.push({ icon: <span className="text-[10px] font-bold">₽</span>, text: `Стоимость: ${ticket.priceFix} ₽` })
+  if (ticket.priceFix) info.push({ icon: null, text: `Стоимость: ${ticket.priceFix} руб.` })
   if (ticket.km) info.push({ icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v10l4.3 2.5"/></svg>, text: `Расстояние: ${ticket.km} км` })
   if (ticket.description && ticket.type !== 'custom') info.push({ icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg>, text: ticket.description })
   return info
@@ -342,8 +342,8 @@ export default function Tickets() {
                 {extraInfo.length > 0 && (
                   <div className="px-4 pb-3 flex flex-wrap gap-x-4 gap-y-1">
                     {extraInfo.map((info, i) => (
-                      <span key={i} className="flex items-center gap-1 text-xs text-gray-600 dark:text-white/50">
-                        <span className="text-gray-400 dark:text-white/30">{info.icon}</span>
+                      <span key={i} className={`flex items-center gap-1 ${ticket.type === 'transfer' ? 'text-sm font-medium text-gray-800 dark:text-white' : 'text-xs text-gray-600 dark:text-white/50'}`}>
+                        {info.icon && <span className="text-gray-400 dark:text-white/30">{info.icon}</span>}
                         {info.text}
                       </span>
                     ))}
