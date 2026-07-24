@@ -14,21 +14,23 @@ export default function Services() {
   const [formPrice, setFormPrice] = useState('')
   const [formIcon, setFormIcon] = useState('')
   const [formRequiresTime, setFormRequiresTime] = useState(true)
+  const [formDescription, setFormDescription] = useState('')
+  const [formShowDescription, setFormShowDescription] = useState(false)
   const [formErrors, setFormErrors] = useState<{ name?: string }>({})
 
-  function openAdd() { setEditService(null); setFormName(''); setFormPrice(''); setFormIcon(''); setFormRequiresTime(true); setShowForm(true) }
-  function openEdit(service: Service) { setEditService(service); setFormName(service.name); setFormPrice(service.priceInfo ?? ''); setFormIcon(service.icon ?? ''); setFormRequiresTime(service.requiresTime); setShowForm(true) }
+  function openAdd() { setEditService(null); setFormName(''); setFormPrice(''); setFormIcon(''); setFormRequiresTime(true); setFormDescription(''); setFormShowDescription(false); setShowForm(true) }
+  function openEdit(service: Service) { setEditService(service); setFormName(service.name); setFormPrice(service.priceInfo ?? ''); setFormIcon(service.icon ?? ''); setFormRequiresTime(service.requiresTime); setFormDescription(service.description ?? ''); setFormShowDescription(service.showDescription ?? false); setShowForm(true) }
 
   function handleSave() {
     if (!formName.trim()) { setFormErrors({ name: 'Введите название' }); return }
     setFormErrors({})
-    const payload = { name: formName.trim(), priceInfo: formPrice || undefined, icon: formIcon || undefined, assignedTo: 'admin' as const, fields: { requiresTime: formRequiresTime } }
+    const payload = { name: formName.trim(), priceInfo: formPrice || undefined, icon: formIcon || undefined, assignedTo: 'admin' as const, fields: { requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription } }
     if (editService) {
-      const updated = { ...editService, ...payload, requiresTime: formRequiresTime }
+      const updated = { ...editService, ...payload, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription }
       setServices(prev => prev.map(s => s.id === editService.id ? updated : s))
       apiPost(`/api/services/${editService.id}`, payload).catch(() => {})
     } else {
-      const newService: Service = { id: `cs-${Date.now()}`, ...payload, active: true, requiresTime: formRequiresTime }
+      const newService: Service = { id: `cs-${Date.now()}`, ...payload, active: true, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription }
       setServices(prev => [...prev, newService])
       apiPost('/api/services', { ...payload, active: true }).catch(() => {})
     }
@@ -85,6 +87,11 @@ export default function Services() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600 dark:text-white/70">Требует время</span>
               <button onClick={() => setFormRequiresTime(p => !p)} className={`w-12 h-6 rounded-full transition-colors relative ${formRequiresTime ? 'bg-glamp-600' : 'bg-gray-300 dark:bg-white/10'}`}><span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formRequiresTime ? 'left-7' : 'left-1'}`} /></button>
+            </div>
+            <div><label className="text-sm font-bold text-gray-600 dark:text-white/60 mb-1 block">Описание</label><textarea value={formDescription} onChange={e => setFormDescription(e.target.value)} placeholder="Описание услуги для гостя..." rows={2} className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500 resize-none" /></div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-white/70">Показывать описание</span>
+              <button onClick={() => setFormShowDescription(p => !p)} className={`w-12 h-6 rounded-full transition-colors relative ${formShowDescription ? 'bg-glamp-600' : 'bg-gray-300 dark:bg-white/10'}`}><span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formShowDescription ? 'left-7' : 'left-1'}`} /></button>
             </div>
             <div className="grid grid-cols-2 gap-3 pt-2">
               <button onClick={() => setShowForm(false)} className="py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/50 text-sm font-medium hover:bg-gray-100 dark:hover:bg-white/5 transition-colors">Отмена</button>

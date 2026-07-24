@@ -21,12 +21,14 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
+    "@types/qrcode": "^1.5.6",
     "@vitejs/plugin-legacy": "^6.1.1",
     "concurrently": "^10.0.3",
     "terser": "^5.48.0",
     "vitest": "^4.1.9"
   },
   "dependencies": {
+    "qrcode": "^1.5.4",
     "serve": "^14.2.6"
   }
 }

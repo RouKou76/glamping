@@ -30,7 +30,7 @@ export default function Home() {
   }, [refetchServices, refetchMenuItems])
   const activeServices = useMemo(() => services?.filter(s => s.active) ?? [], [services])
   const [activeModal, setActiveModal] = useState<ActiveModal>(null)
-  const [activeServiceConfig, setActiveServiceConfig] = useState<{ title: string; steps: OrderStep[]; message: string; serviceName: string } | null>(null)
+  const [activeServiceConfig, setActiveServiceConfig] = useState<{ title: string; steps: OrderStep[]; message: string; serviceName: string; hint?: string } | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
   const SERVICE_CONFIGS: Record<string, { title: string; steps: OrderStep[]; message: string; hint?: string }> = useMemo(() => {
@@ -76,14 +76,15 @@ export default function Home() {
   }
   }, [t, menuItems])
 
-  function buildServiceConfig(service: Service): { title: string; steps: OrderStep[]; message: string; serviceName: string } {
+  function buildServiceConfig(service: Service): { title: string; steps: OrderStep[]; message: string; serviceName: string; hint?: string } {
     const steps: OrderStep[] = []
     if (service.requiresTime) {
       steps.push({ type: 'date', key: 'date', label: t('food.date') })
       steps.push({ type: 'time', key: 'time', label: t('food.time'), required: true })
     }
     steps.push({ type: 'textarea', key: 'comment', label: 'Комментарий', placeholder: service.name })
-    return { title: service.name, steps, message: `Заявка «${service.name}» отправлена`, serviceName: service.name }
+    const hint = service.showDescription && service.description ? service.description : undefined
+    return { title: service.name, steps, message: `Заявка «${service.name}» отправлена`, serviceName: service.name, hint }
   }
 
   function showToast(msg: string) { setToast(msg); setTimeout(() => setToast(null), 3000) }
@@ -186,6 +187,7 @@ export default function Home() {
           guestCount={guestCount}
           taskType="custom"
           serviceName={activeServiceConfig.serviceName}
+          hint={activeServiceConfig.hint}
           onClose={() => setActiveServiceConfig(null)}
           onSubmit={() => handleOrderSubmit({}, activeServiceConfig.message)}
         />

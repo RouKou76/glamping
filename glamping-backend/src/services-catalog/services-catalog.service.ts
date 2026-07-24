@@ -14,17 +14,21 @@ export class ServicesCatalogService {
   async findAll(showInactive = false) {
     const where = showInactive ? {} : { active: true };
     const services = await this.prisma.service.findMany({ where });
-    return services.map((s) => ({
-      id: s.id,
-      name: s.name,
-      requiresTime:
-        (s.fields as Record<string, unknown>)?.requiresTime ?? false,
-      priceInfo: s.price,
-      icon: s.icon,
-      jsonSchema: s.jsonSchema,
-      active: s.active,
-      assignedTo: s.assignedTo,
-    }));
+    return services.map((s) => {
+      const fields = s.fields as Record<string, unknown>;
+      return {
+        id: s.id,
+        name: s.name,
+        requiresTime: fields?.requiresTime ?? false,
+        priceInfo: s.price,
+        icon: s.icon,
+        description: (fields?.description as string) || undefined,
+        showDescription: (fields?.showDescription as boolean) ?? false,
+        jsonSchema: s.jsonSchema,
+        active: s.active,
+        assignedTo: s.assignedTo,
+      };
+    });
   }
 
   async create(dto: CreateServiceDto) {

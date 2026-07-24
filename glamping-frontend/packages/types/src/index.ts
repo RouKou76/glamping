@@ -90,6 +90,8 @@ export interface Service {
   requiresTime: boolean
   priceInfo?: string
   icon?: string
+  description?: string
+  showDescription?: boolean
   jsonSchema?: Record<string, unknown>
   active: boolean
   assignedTo: AssignedRole
