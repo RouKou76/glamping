@@ -69,7 +69,12 @@ function getUrgency(desiredAt?: string): { color: string; label: string; sort: n
 function getMainContent(ticket: Task): { title: string; items: string[] } {
   switch (ticket.type) {
     case 'food': return { title: 'Заказ', items: ticket.items?.map(i => `${i.name} ×${i.quantity}`) ?? [] }
-    case 'transfer': return { title: 'Адрес', items: [ticket.geo ?? 'Не указан'] }
+    case 'transfer': {
+      const items: string[] = []
+      if (ticket.location) items.push(ticket.location)
+      if (ticket.geo) items.push(ticket.geo)
+      return { title: 'Направление', items: items.length > 0 ? items : ['Не указано'] }
+    }
     case 'cleaning': return { title: '', items: ['Полная уборка домика'] }
     case 'towels': return { title: '', items: ['Замена полотенец'] }
     case 'minibar': return { title: '', items: ['Пополнение минибар'] }
@@ -80,8 +85,9 @@ function getMainContent(ticket: Task): { title: string; items: string[] } {
 
 function getExtraInfo(ticket: Task): { icon: React.ReactNode; text: string }[] {
   const info: { icon: React.ReactNode; text: string }[] = []
-  if (ticket.location) info.push({ icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>, text: LOCATION_LABELS[ticket.location] ?? ticket.location })
+  if (ticket.location && ticket.type !== 'transfer') info.push({ icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>, text: LOCATION_LABELS[ticket.location] ?? ticket.location })
   if (ticket.guestCount) info.push({ icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>, text: `${ticket.guestCount} чел.` })
+  if (ticket.priceFix) info.push({ icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>, text: `${ticket.priceFix} ₽` })
   if (ticket.description && ticket.type !== 'custom') info.push({ icon: <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg>, text: ticket.description })
   return info
 }
@@ -304,7 +310,9 @@ export default function Tickets() {
                     {mainContent.title && <p className="text-[10px] font-bold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-0.5">{mainContent.title}</p>}
                     <div className="space-y-0">
                       {mainContent.items.map((item, i) => (
-                        <p key={i} className="text-sm font-medium text-gray-800 dark:text-white leading-tight">• {item}</p>
+                        <p key={i} className={`leading-tight ${ticket.type === 'transfer' && i === 0 ? 'text-base font-bold text-gray-900 dark:text-white' : 'text-sm font-medium text-gray-800 dark:text-white'}`}>
+                          {ticket.type === 'transfer' && i === 0 ? item : `• ${item}`}
+                        </p>
                       ))}
                     </div>
                   </div>
