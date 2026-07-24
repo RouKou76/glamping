@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react'
 
-export function requestNotificationPermission() {
+function requestNotificationPermission() {
   if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission()
   }
