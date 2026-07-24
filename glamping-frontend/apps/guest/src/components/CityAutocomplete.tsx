@@ -29,11 +29,11 @@ export function CityAutocomplete({ cities, value, onChange }: CityAutocompletePr
     ? cities.filter(c => c.name.toLowerCase().includes(query.toLowerCase())).slice(0, 8)
     : []
 
-  useLayoutEffect(() => {
-    if (!isOpen || (!query.length && sortedCities.length === 0) || (query.length > 0 && filtered.length === 0)) {
-      setDropdownStyle({ display: 'none' })
-      return
-    }
+  const showAll = isOpen && query.length === 0
+  const showFiltered = isOpen && query.length > 0 && filtered.length > 0
+  const showDropdown = showAll || showFiltered
+
+  const updatePosition = () => {
     const rect = inputRef.current?.getBoundingClientRect()
     if (!rect) return
     setDropdownStyle({
@@ -43,7 +43,29 @@ export function CityAutocomplete({ cities, value, onChange }: CityAutocompletePr
       width: rect.width,
       zIndex: 9999,
     })
-  }, [isOpen, query, sortedCities.length, filtered.length])
+  }
+
+  useLayoutEffect(() => {
+    if (!showDropdown) {
+      setDropdownStyle({ display: 'none' })
+      return
+    }
+    updatePosition()
+  }, [showDropdown])
+
+  useEffect(() => {
+    if (!showDropdown) return
+    const vp = window.visualViewport
+    if (!vp) return
+    const onResize = () => updatePosition()
+    const onScroll = () => updatePosition()
+    vp.addEventListener('resize', onResize)
+    vp.addEventListener('scroll', onScroll)
+    return () => {
+      vp.removeEventListener('resize', onResize)
+      vp.removeEventListener('scroll', onScroll)
+    }
+  }, [showDropdown])
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -66,10 +88,6 @@ export function CityAutocomplete({ cities, value, onChange }: CityAutocompletePr
     setIsOpen(true)
     onChange(null)
   }
-
-  const showAll = isOpen && query.length === 0
-  const showFiltered = isOpen && query.length > 0 && filtered.length > 0
-  const showDropdown = showAll || showFiltered
 
   return (
     <>
