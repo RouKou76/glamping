@@ -22,6 +22,20 @@ export default function Services() {
   const [formBookingSchedule, setFormBookingSchedule] = useState<{ date: string; slots: string }[]>([])
   const [formErrors, setFormErrors] = useState<{ name?: string }>({})
 
+  function formatDisplayDate(iso: string) {
+    if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso
+    const [y, m, d] = iso.split('-')
+    return `${d}/${m}/${y}`
+  }
+  function parseDisplayDate(v: string) {
+    const cleaned = v.replace(/[^\d/]/g, '')
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(cleaned)) {
+      const [d, m, y] = cleaned.split('/')
+      return `${y}-${m}-${d}`
+    }
+    return cleaned
+  }
+
   function openAdd() { setEditService(null); setFormName(''); setFormPrice(''); setFormIcon(''); setFormRequiresTime(true); setFormDescription(''); setFormShowDescription(false); setFormBooking(false); setFormBookingSlots(''); setFormBookingLimit(1); setFormBookingSchedule([]); setShowForm(true) }
   function openEdit(service: Service) { setEditService(service); setFormName(service.name); setFormPrice(service.priceInfo ?? ''); setFormIcon(service.icon ?? ''); setFormRequiresTime(service.requiresTime); setFormDescription(service.description ?? ''); setFormShowDescription(service.showDescription ?? false); setFormBooking(service.booking ?? false); setFormBookingSlots(service.bookingSlots?.join(', ') ?? ''); setFormBookingLimit(service.bookingLimit ?? 1); setFormBookingSchedule((service.bookingSchedule ?? []).map(s => ({ date: s.date, slots: s.slots.join(', ') }))); setShowForm(true) }
 
@@ -122,7 +136,7 @@ export default function Services() {
                   <div className="space-y-2">
                     {formBookingSchedule.map((entry, i) => (
                       <div key={i} className="flex gap-2 items-center">
-                        <input type="date" value={entry.date} onChange={e => { const next = [...formBookingSchedule]; next[i] = { ...next[i], date: e.target.value }; setFormBookingSchedule(next) }} className="flex-1 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" />
+                        <input type="text" value={formatDisplayDate(entry.date)} onChange={e => { const next = [...formBookingSchedule]; next[i] = { ...next[i], date: parseDisplayDate(e.target.value) }; setFormBookingSchedule(next) }} placeholder="дд/мм/гггг" inputMode="numeric" className="w-28 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" />
                         <input type="text" value={entry.slots} onChange={e => { const next = [...formBookingSchedule]; next[i] = { ...next[i], slots: e.target.value }; setFormBookingSchedule(next) }} placeholder="10:00, 14:00" className="flex-1 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" />
                         <button onClick={() => setFormBookingSchedule(prev => prev.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-600 shrink-0 p-1">✕</button>
                       </div>
