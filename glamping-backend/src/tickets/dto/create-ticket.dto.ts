@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsInt,
   IsArray,
+  IsNumber,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -95,6 +96,11 @@ export class CreateTicketDto {
   @IsString()
   @IsOptional()
   sessionId?: string;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  km?: number;
 
   @ApiPropertyOptional()
   @IsInt()

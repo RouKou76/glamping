@@ -50,6 +50,7 @@ export interface Task {
   location?: ServiceLocation
   guestCount?: number
   priceFix?: number
+  km?: number
 }
 
 export type Translations = Partial<Record<Lang, {

@@ -118,6 +118,7 @@ model Ticket {
   guestCount  Int?          @map("guest_count")
   items       Json?
   priceFix    Int?          @map("price_fix")
+  km          Float?
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
 

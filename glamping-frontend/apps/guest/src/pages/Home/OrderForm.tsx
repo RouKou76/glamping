@@ -232,6 +232,7 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
     if (values.city) {
       payload.location = values.city
       if (values.cityPrice) payload.priceFix = values.cityPrice
+      if (values.cityKm) payload.km = values.cityKm
     }
     if (values.geo) payload.geo = values.geo
     if (values.guestCount) payload.guestCount = values.guestCount
@@ -289,7 +290,7 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
             if (s.type === 'city') return (
               <div key={s.key}>
                 <label className="text-sm font-bold text-gray-600 dark:text-white/50 uppercase tracking-wider mb-2 block">{s.label}{s.required && ' *'}</label>
-                <CityAutocomplete cities={transfers ?? []} value={(values[s.key] as string) || ''} onChange={(city) => { if (city) { setVal(s.key, city.name); setVal('cityPrice', city.price) } else { setVal(s.key, ''); setVal('cityPrice', 0) } }} />
+                <CityAutocomplete cities={transfers ?? []} value={(values[s.key] as string) || ''} onChange={(city) => { if (city) { setVal(s.key, city.name); setVal('cityPrice', city.price); setVal('cityKm', city.km) } else { setVal(s.key, ''); setVal('cityPrice', 0); setVal('cityKm', 0) } }} />
                 {errors[s.key] && <ErrorMsg text={errors[s.key]} />}
                 <p className="text-[10px] text-gray-400 dark:text-white/30 mt-2">{t('transfer.accuracyHint')}</p>
               </div>

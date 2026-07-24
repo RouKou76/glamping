@@ -55,6 +55,7 @@ export class TicketsService {
       location: t.location,
       guestCount: t.guestCount,
       priceFix: t.priceFix,
+      km: t.km,
     }));
   }
 
@@ -101,6 +102,7 @@ export class TicketsService {
         guestCount: dto.guestCount,
         items: dto.items as never,
         priceFix: dto.priceFix,
+        km: dto.km,
         desiredAt: dto.desiredAt ? new Date(dto.desiredAt) : undefined,
         sessionId: dto.sessionId,
       },
@@ -120,6 +122,7 @@ export class TicketsService {
       location: ticket.location,
       guestCount: ticket.guestCount,
       priceFix: ticket.priceFix,
+      km: ticket.km,
       updatedAt: ticket.updatedAt.toISOString(),
     };
 
