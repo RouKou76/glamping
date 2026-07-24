@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useApi, apiPost } from '@glamping/api'
 import type { House, GuestSession, Lang } from '@glamping/types'
 import { ConfirmDialog } from '@glamping/ui'
+import QRCode from 'qrcode'
 
 const LANG_OPTIONS: { value: Lang; label: string }[] = [{ value: 'ru', label: '🇷🇺 Русский' }, { value: 'en', label: '🇬🇧 English' }, { value: 'zh', label: '🇨🇳 中文' }]
 
@@ -27,6 +28,19 @@ export default function CheckIn() {
   const [copied, setCopied] = useState(false)
 
   const [tabletHouse, setTabletHouse] = useState<House | null>(null)
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null)
+
+  function getTabletUrl(token: string, hid: string) {
+    return import.meta.env.DEV
+      ? `http://${window.location.hostname}:5173?token=${token}&hid=${hid}`
+      : `http://${window.location.hostname}?token=${token}&hid=${hid}`
+  }
+
+  useEffect(() => {
+    if (!tokenModal || !qrCanvasRef.current) return
+    const url = getTabletUrl(tokenModal.token, tokenModal.hid)
+    QRCode.toCanvas(qrCanvasRef.current, url, { width: 180, margin: 1 })
+  }, [tokenModal])
 
   useEffect(() => { if (apiHouses) setHouses(apiHouses) }, [apiHouses])
   useEffect(() => { if (apiSessions) setSessions(apiSessions) }, [apiSessions])
@@ -158,13 +172,17 @@ export default function CheckIn() {
           <div className="w-full max-w-sm bg-white dark:bg-[#1a1d27] rounded-2xl p-6 space-y-4 shadow-xl" onClick={e => e.stopPropagation()}>
             <h3 className="text-lg font-bold text-gray-800 dark:text-white text-center">Настройка планшета</h3>
             <p className="text-sm text-gray-500 dark:text-white/60 text-center">Домик №{tokenModal.number}</p>
-            <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-4 border border-gray-200 dark:border-white/10">
-              <p className="text-xs text-gray-500 dark:text-white/50 mb-1">Код для ввода на планшете:</p>
-              <p className="text-sm font-mono font-bold text-gray-800 dark:text-white break-all select-all">{
-                import.meta.env.DEV
-                  ? `http://${window.location.hostname}:5173?token=${tokenModal.token}&hid=${tokenModal.hid}`
-                  : `http://${window.location.hostname}?token=${tokenModal.token}&hid=${tokenModal.hid}`
-              }</p>
+            <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-4 border border-gray-200 dark:border-white/10 space-y-3">
+              <p className="text-xs text-gray-500 dark:text-white/50 text-center">Отсканируйте QR-код на планшете:</p>
+              <div className="flex justify-center">
+                <canvas ref={qrCanvasRef} className="rounded-lg" />
+              </div>
+              <div className="border-t border-gray-200 dark:border-white/10 pt-3">
+                <p className="text-xs text-gray-500 dark:text-white/50 mb-1">или введите ссылку вручную:</p>
+                <p className="text-sm font-mono font-bold text-gray-800 dark:text-white break-all select-all">{
+                  getTabletUrl(tokenModal.token, tokenModal.hid)
+                }</p>
+              </div>
             </div>
             <button onClick={copyToken} className={`w-full py-2.5 rounded-xl text-sm font-bold transition-colors ${copied ? 'bg-green-500 text-white' : 'bg-glamp-600 hover:bg-glamp-700 text-white active:scale-95'}`}>
               {copied ? '✓ Скопировано' : 'Копировать код'}
