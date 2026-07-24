@@ -148,5 +148,13 @@
     "confirmMessage": "Are you ready to check out? The administrator will inspect the cottage and return the deposit.",
     "submit": "Confirm check-out",
     "requested": "Request sent, please wait"
+  },
+  "booking": {
+    "selectTime": "Select time",
+    "selectDateFirst": "Select a date first",
+    "noSlots": "No available slots",
+    "full": "Full",
+    "available": "Available",
+    "remaining": "{{count}} of {{limit}}"
   }
 }

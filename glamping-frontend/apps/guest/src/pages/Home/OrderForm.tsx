@@ -306,7 +306,7 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
               <div key={s.key}>
                 <label className="text-sm font-bold text-gray-600 dark:text-white/50 uppercase tracking-wider mb-2 block">{s.label}{s.required && ' *'}</label>
                 {liveSlots.length === 0 ? (
-                  <p className="text-sm text-gray-400 dark:text-white/40">{!values.date ? 'Сначала выберите дату' : 'Нет доступных слотов'}</p>
+                  <p className="text-sm text-gray-400 dark:text-white/40">{!values.date ? t('booking.selectDateFirst') : t('booking.noSlots')}</p>
                 ) : (
                 <div className="space-y-2">
                   {liveSlots.map(slot => {
@@ -319,7 +319,7 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
                         className={`w-full p-3 rounded-xl text-sm font-medium border transition-colors flex justify-between items-center ${isSelected ? 'bg-glamp-600 border-glamp-600 text-white' : isFull ? 'bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-400 dark:text-white/30 cursor-not-allowed' : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10'}`}>
                         <span>{slot.time}</span>
                         <span className={`text-xs ${isFull ? 'text-red-400' : remaining === 1 ? 'text-amber-500' : 'opacity-60'}`}>
-                          {isFull ? 'Занято' : remaining === slot.limit ? 'Свободно' : `${remaining} из ${slot.limit}`}
+                          {isFull ? t('booking.full') : remaining === slot.limit ? t('booking.available') : t('booking.remaining', { count: remaining, limit: slot.limit })}
                         </span>
                       </button>
                     )

@@ -80,7 +80,7 @@ export default function Home() {
     const steps: OrderStep[] = []
     if (service.booking) {
       steps.push({ type: 'date', key: 'date', label: t('food.date') })
-      steps.push({ type: 'slot', key: 'slot', label: 'Выберите время', serviceId: service.id, slots: [], required: true })
+      steps.push({ type: 'slot', key: 'slot', label: t('booking.selectTime'), serviceId: service.id, slots: [], required: true })
     } else if (service.requiresTime) {
       steps.push({ type: 'date', key: 'date', label: t('food.date') })
       steps.push({ type: 'time', key: 'time', label: t('food.time'), required: true })

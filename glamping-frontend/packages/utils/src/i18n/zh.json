@@ -148,5 +148,13 @@
     "confirmMessage": "您确定准备好退房了吗？管理员将检查小屋并退还押金。",
     "submit": "确认退房",
     "requested": "申请已发送，请等待"
+  },
+  "booking": {
+    "selectTime": "请选择时间",
+    "selectDateFirst": "请先选择日期",
+    "noSlots": "没有可用时段",
+    "full": "已满",
+    "available": "可预约",
+    "remaining": "{{count}} / {{limit}}"
   }
 }
