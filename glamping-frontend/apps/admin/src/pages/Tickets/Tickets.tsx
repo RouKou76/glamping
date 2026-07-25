@@ -104,7 +104,7 @@ export default function Tickets() {
   const { data: apiHouses } = useApi<House[]>('/api/houses')
   const { data: apiServices } = useApi<Service[]>('/api/services?showInactive=true')
   const { data: apiMenu } = useApi<{ id: string; subcat?: string }[]>('/api/menu')
-  const { hasPermission } = useAuth()
+  const { user, hasPermission } = useAuth()
   const [tickets, setTickets] = useState<Task[]>([])
   const [houses, setHouses] = useState<House[]>([])
   const housesRef = useRef(houses)
@@ -154,6 +154,12 @@ export default function Tickets() {
            hasPermission(`view_tickets:${type}`)
   }
 
+  function canViewTicket(ticket: Task): boolean {
+    return hasPermission('manage_tickets') ||
+           hasPermission('view_tickets') ||
+           hasPermission(`view_tickets:${ticket.type}`)
+  }
+
   const { notify } = useNotifications()
 
   useEffect(() => {
@@ -161,8 +167,12 @@ export default function Tickets() {
       const event = (e as CustomEvent).detail
       if (event.type === 'server:ticket:created') {
         const task = event.payload as Task
+        const perms = user?.role?.permissions ?? []
+        const isAdmin = user?.role?.name === 'admin'
+        const canView = isAdmin || perms.includes('manage_tickets') || perms.includes('view_tickets') || perms.includes(`view_tickets:${task.type}`)
+        if (!canView) return
         setTickets(prev => [task, ...prev])
-        const typeLabel = task.type === 'custom' && task.description ? task.description.split(']')[0].replace('[', '') : task.type
+        const typeLabel = task.type === 'custom' && task.description ? task.description.split(']')[0].replace('[', '') : (TYPE_CONFIG[task.type]?.label ?? task.type)
         const houseNum = housesRef.current.find(h => h.id === task.houseId)?.number ?? '?'
         notify('Новая заявка', `${typeLabel} — Домик №${houseNum}`)
       }
@@ -177,7 +187,7 @@ export default function Tickets() {
     }
     window.addEventListener('glamp:ticket:update', handler)
     return () => window.removeEventListener('glamp:ticket:update', handler)
-  }, [])
+  }, [user])
 
   function getHouseGuestCount(houseId: string): number {
     const house = houses.find(h => h.id === houseId) as { guestCount?: number } | undefined
@@ -227,6 +237,7 @@ export default function Tickets() {
 
   const filtered = useMemo(() => {
     const result = tickets.filter(t => {
+      if (!canViewTicket(t)) return false
       const ticketType = getTicketFilterType(t)
       const matchType = typeFilter === 'all' || ticketType === typeFilter
       if (statusFilter === 'archived') return t.status === 'archived' && matchType

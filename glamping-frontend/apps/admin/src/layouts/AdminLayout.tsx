@@ -29,12 +29,14 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function AdminLayout() {
   const [gateRequest, setGateRequest] = useState<GateRequest | null>(null)
+  const [wsReady, setWsReady] = useState(false)
   const { user, logout, hasAnyPermission } = useAuth()
 
   const wsAuth = useMemo(() => ({ role: 'admin', token: localStorage.getItem('glamp-token') || '' }), [user])
 
   const { isConnected: wsConnected } = useWebSocket({
     auth: wsAuth,
+    onConnect: () => setWsReady(true),
     onMessage: (msg) => {
       if (msg.type === 'server:ticket:created' || msg.type === 'server:ticket:updated') {
         window.dispatchEvent(new CustomEvent('glamp:ticket:update', { detail: msg }))
@@ -46,7 +48,7 @@ export default function AdminLayout() {
   })
 
   const { isConnected: statusConnected } = useConnectionStatus({ wsConnected })
-  const connectionStatus: ConnectionStatus = statusConnected ? 'connected' : 'offline'
+  const connectionStatus: ConnectionStatus = !wsReady ? 'connected' : (statusConnected ? 'connected' : 'offline')
 
   const visibleNav = NAV_ITEMS.filter(item => !item.permission || hasAnyPermission(item.permission))
 

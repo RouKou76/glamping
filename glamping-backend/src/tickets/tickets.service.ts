@@ -5,6 +5,16 @@ import { PushService } from '../push/push.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 
+const TYPE_LABELS: Record<string, string> = {
+  food: 'Питание',
+  minibar: 'Минибар',
+  transfer: 'Трансфер',
+  cleaning: 'Уборка',
+  towels: 'Полотенца',
+  gates: 'Ворота',
+  custom: 'Услуга',
+};
+
 @Injectable()
 export class TicketsService {
   constructor(
@@ -138,7 +148,7 @@ export class TicketsService {
         where: { id: dto.houseId },
       });
       const typeLabel =
-        dto.type === 'custom' && dto.description ? dto.description : dto.type;
+        dto.type === 'custom' && dto.description ? dto.description : (TYPE_LABELS[dto.type] ?? dto.type);
       void this.push.sendNotification({
         title: 'Новая заявка',
         body: `${typeLabel} — Домик №${house?.number ?? '?'}`,
@@ -193,7 +203,7 @@ export class TicketsService {
       const label = statusLabels[dto.status] ?? dto.status;
       void this.push.sendNotification({
         title: 'Заявка обновлена',
-        body: `${result.type} — Домик №${house?.number ?? '?'} → ${label}`,
+        body: `${TYPE_LABELS[result.type] ?? result.type} — Домик №${house?.number ?? '?'} → ${label}`,
         url: '/',
       });
     }
