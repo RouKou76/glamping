@@ -133,16 +133,18 @@ export class TicketsService {
 
     void this.gateway.broadcastToAdmins('server:ticket:created', result);
 
-    const house = await this.prisma.house.findUnique({
-      where: { id: dto.houseId },
-    });
-    const typeLabel =
-      dto.type === 'custom' && dto.description ? dto.description : dto.type;
-    void this.push.sendNotification({
-      title: 'Новая заявка',
-      body: `${typeLabel} — Домик №${house?.number ?? '?'}`,
-      url: '/',
-    });
+    if (!this.gateway.hasConnectedAdmins()) {
+      const house = await this.prisma.house.findUnique({
+        where: { id: dto.houseId },
+      });
+      const typeLabel =
+        dto.type === 'custom' && dto.description ? dto.description : dto.type;
+      void this.push.sendNotification({
+        title: 'Новая заявка',
+        body: `${typeLabel} — Домик №${house?.number ?? '?'}`,
+        url: '/',
+      });
+    }
 
     return result;
   }

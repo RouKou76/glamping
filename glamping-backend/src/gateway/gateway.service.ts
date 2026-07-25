@@ -75,6 +75,11 @@ export class GatewayService
     this.server.to('admins').emit(event, payload);
   }
 
+  hasConnectedAdmins(): boolean {
+    const adminsRoom = this.server.sockets.adapter.rooms.get('admins');
+    return !!adminsRoom && adminsRoom.size > 0;
+  }
+
   sendToHouse(houseId: string, event: string, payload: unknown) {
     this.server.to(`house:${houseId}`).emit(event, payload);
   }

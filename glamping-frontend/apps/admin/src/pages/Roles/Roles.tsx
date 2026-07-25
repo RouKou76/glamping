@@ -15,8 +15,7 @@ const ALL_PERMISSIONS = [
   { key: 'manage_houses', label: 'Управление домиками' },
   { key: 'manage_services', label: 'Управление услугами' },
   { key: 'manage_menu', label: 'Управление меню' },
-  { key: 'view_tickets', label: 'Просмотр заявок', hasSubtypes: true },
-  { key: 'manage_tickets', label: 'Управление заявками' },
+  { key: 'view_tickets', label: 'Просмотр и управление заявками', hasSubtypes: true },
   { key: 'manage_chat', label: 'Управление чатом' },
   { key: 'manage_settings', label: 'Управление настройками' },
   { key: 'manage_roles', label: 'Управление ролями' },
@@ -81,9 +80,8 @@ export default function Roles() {
   async function handleSave() {
     if (!formName.trim()) { setError('Введите название роли'); return }
 
-    const viewTicketPerm = formPermissions.includes('view_tickets')
-    if (viewTicketPerm && formTicketTypes.length === 0) {
-      setError('Выберите хотя бы один тип заявок или "Все"')
+    if (formTicketTypes.length === 0) {
+      setError('Выберите хотя бы один тип заявок')
       return
     }
 
@@ -91,7 +89,7 @@ export default function Roles() {
       ? ['view_tickets']
       : formTicketTypes.map(t => `view_tickets:${t}`)
 
-    const allPerms = [...formPermissions.filter(p => p !== 'view_tickets'), ...ticketPerms]
+    const allPerms = [...formPermissions, ...ticketPerms]
 
     try {
       if (editRole) {
@@ -112,8 +110,6 @@ export default function Roles() {
     } catch { /* ignore */ }
     setDeleteId(null)
   }
-
-  const viewTicketExpanded = formPermissions.includes('view_tickets')
 
   return (
     <div className="p-4 space-y-4">
@@ -160,27 +156,26 @@ export default function Roles() {
             <div>
               <label className="text-xs font-bold text-gray-600 dark:text-white/60 mb-2 block">Права доступа</label>
               <div className="space-y-2">
-                {ALL_PERMISSIONS.map(p => (
-                  <div key={p.key}>
-                    <label className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 cursor-pointer transition-colors">
-                      <input type="checkbox" checked={formPermissions.includes(p.key)} onChange={() => togglePermission(p.key)}
-                        className="w-4 h-4 rounded border-gray-300 text-glamp-600 focus:ring-glamp-500" />
-                      <span className="text-sm text-gray-700 dark:text-white/90">{p.label}</span>
-                    </label>
-                    {p.hasSubtypes && viewTicketExpanded && (
-                      <div className="ml-7 mt-1 flex flex-wrap gap-1.5">
-                        {TICKET_TYPES.map(t => (
-                          <label key={t.key} className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-gray-50 dark:bg-white/5 cursor-pointer transition-colors">
-                            <input type="checkbox" checked={formTicketTypes.includes(t.key)}
-                              onChange={() => toggleTicketType(t.key)}
-                              className="w-3.5 h-3.5 rounded border-gray-300 text-glamp-600 focus:ring-glamp-500" />
-                            <span className="text-xs text-gray-600 dark:text-white/70">{t.label}</span>
-                          </label>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                {ALL_PERMISSIONS.filter(p => !p.hasSubtypes).map(p => (
+                  <label key={p.key} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 cursor-pointer transition-colors">
+                    <input type="checkbox" checked={formPermissions.includes(p.key)} onChange={() => togglePermission(p.key)}
+                      className="w-4 h-4 rounded border-gray-300 text-glamp-600 focus:ring-glamp-500" />
+                    <span className="text-sm text-gray-700 dark:text-white/90">{p.label}</span>
+                  </label>
                 ))}
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-white/5 space-y-2">
+                  <p className="text-sm font-bold text-gray-700 dark:text-white/90">Просмотр и управление заявками</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {TICKET_TYPES.map(t => (
+                      <label key={t.key} className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-white/10">
+                        <input type="checkbox" checked={formTicketTypes.includes(t.key)}
+                          onChange={() => toggleTicketType(t.key)}
+                          className="w-3.5 h-3.5 rounded border-gray-300 text-glamp-600 focus:ring-glamp-500" />
+                        <span className="text-xs text-gray-600 dark:text-white/70">{t.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
             {error && <p className="text-sm text-red-500 text-center">{error}</p>}

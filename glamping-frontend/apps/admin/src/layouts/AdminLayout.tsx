@@ -2,11 +2,9 @@ import { useState, useMemo } from 'react'
 import { Outlet, NavLink } from 'react-router-dom'
 import { ConnectionBanner, ThemeToggle } from '@glamping/ui'
 import type { ConnectionStatus } from '@glamping/ui'
-import { useWebSocket } from '@glamping/api'
+import { useWebSocket, useConnectionStatus } from '@glamping/api'
 import { GateAlertBanner } from './GateAlertBanner'
 import { useAuth } from '../contexts/AuthContext'
-
-const connectionStatus: ConnectionStatus = 'connected'
 
 interface GateRequest {
   houseId: string
@@ -33,9 +31,9 @@ export default function AdminLayout() {
   const [gateRequest, setGateRequest] = useState<GateRequest | null>(null)
   const { user, logout, hasAnyPermission } = useAuth()
 
-  const wsAuth = useMemo(() => ({ role: 'admin', token: localStorage.getItem('glamp-token') || '' }), [])
+  const wsAuth = useMemo(() => ({ role: 'admin', token: localStorage.getItem('glamp-token') || '' }), [user])
 
-  useWebSocket({
+  const { isConnected: wsConnected } = useWebSocket({
     auth: wsAuth,
     onMessage: (msg) => {
       if (msg.type === 'server:ticket:created' || msg.type === 'server:ticket:updated') {
@@ -46,6 +44,9 @@ export default function AdminLayout() {
       }
     },
   })
+
+  const { isConnected: statusConnected } = useConnectionStatus({ wsConnected })
+  const connectionStatus: ConnectionStatus = statusConnected ? 'connected' : 'offline'
 
   const visibleNav = NAV_ITEMS.filter(item => !item.permission || hasAnyPermission(item.permission))
 

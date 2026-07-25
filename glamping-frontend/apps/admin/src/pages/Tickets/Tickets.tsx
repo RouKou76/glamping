@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { useApi, apiPost, useNotifications } from '@glamping/api'
 import type { Task, TaskStatus, House, Service } from '@glamping/types'
 import { Badge } from '@glamping/ui'
@@ -107,12 +107,13 @@ export default function Tickets() {
   const { hasPermission } = useAuth()
   const [tickets, setTickets] = useState<Task[]>([])
   const [houses, setHouses] = useState<House[]>([])
+  const housesRef = useRef(houses)
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all')
   const [typeFilter, setTypeFilter] = useState<FilterType>('all')
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 
   useEffect(() => { if (apiTasks) setTickets(apiTasks) }, [apiTasks])
-  useEffect(() => { if (apiHouses) setHouses(apiHouses) }, [apiHouses])
+  useEffect(() => { if (apiHouses) { setHouses(apiHouses); housesRef.current = apiHouses } }, [apiHouses])
 
   const availableTypes = useMemo(() => {
     const builtIn = ['food', 'minibar', 'transfer', 'cleaning', 'towels']
@@ -162,7 +163,8 @@ export default function Tickets() {
         const task = event.payload as Task
         setTickets(prev => [task, ...prev])
         const typeLabel = task.type === 'custom' && task.description ? task.description.split(']')[0].replace('[', '') : task.type
-        notify('Новая заявка', `${typeLabel} — Домик #${getHouseNumber(task.houseId)}`)
+        const houseNum = housesRef.current.find(h => h.id === task.houseId)?.number ?? '?'
+        notify('Новая заявка', `${typeLabel} — Домик №${houseNum}`)
       }
       if (event.type === 'server:ticket:updated') {
         const updated = event.payload as Task
