@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import * as Sentry from '@sentry/nestjs';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -15,6 +16,10 @@ import { DeviceGuard } from './common/guards/device.guard';
 import { PrismaService } from './common/prisma/prisma.service';
 
 async function bootstrap() {
+  if (process.env.SENTRY_DSN) {
+    Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 0.1 });
+  }
+
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
 
