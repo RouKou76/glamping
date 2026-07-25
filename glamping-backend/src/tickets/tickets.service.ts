@@ -27,10 +27,11 @@ export class TicketsService {
     if (query.assignedTo) where.assignedTo = query.assignedTo;
 
     if (query.userPermissions && query.userRole !== 'admin') {
+      const hasAllView = query.userPermissions.includes('view_tickets');
       const viewTicketTypes = query.userPermissions
         .filter((p) => p.startsWith('view_tickets:'))
         .map((p) => p.split(':')[1]);
-      if (viewTicketTypes.length > 0) {
+      if (!hasAllView && viewTicketTypes.length > 0) {
         where.type = { in: viewTicketTypes };
       }
     }
@@ -57,6 +58,10 @@ export class TicketsService {
       priceFix: t.priceFix,
       km: t.km,
     }));
+  }
+
+  async findById(id: string) {
+    return this.prisma.ticket.findUnique({ where: { id } });
   }
 
   async create(dto: CreateTicketDto) {

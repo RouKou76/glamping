@@ -23,6 +23,7 @@ const ALL_PERMISSIONS = [
 ]
 
 const TICKET_TYPES = [
+  { key: 'all', label: 'Все' },
   { key: 'food', label: 'Еда' },
   { key: 'transfer', label: 'Трансфер' },
   { key: 'cleaning', label: 'Уборка' },
@@ -51,7 +52,14 @@ export default function Roles() {
     setEditRole(role)
     setFormName(role.name)
     setFormPermissions(perms.filter(p => !p.startsWith('view_tickets:')))
-    setFormTicketTypes(perms.filter(p => p.startsWith('view_tickets:')).map(p => p.split(':')[1]))
+
+    const hasAllView = perms.includes('view_tickets')
+    const ticketPerms = perms.filter(p => p.startsWith('view_tickets:')).map(p => p.split(':')[1])
+    if (hasAllView && ticketPerms.length === 0) {
+      setFormTicketTypes(['all'])
+    } else {
+      setFormTicketTypes(ticketPerms)
+    }
     setError('')
     setShowForm(true)
   }
@@ -60,9 +68,31 @@ export default function Roles() {
     setFormPermissions(prev => prev.includes(perm) ? prev.filter(p => p !== perm) : [...prev, perm])
   }
 
+  function toggleTicketType(type: string) {
+    setFormTicketTypes(prev => {
+      if (type === 'all') {
+        return prev.includes('all') ? [] : ['all']
+      }
+      const withoutAll = prev.filter(t => t !== 'all')
+      return withoutAll.includes(type) ? withoutAll.filter(t => t !== type) : [...withoutAll, type]
+    })
+  }
+
   async function handleSave() {
     if (!formName.trim()) { setError('Введите название роли'); return }
-    const allPerms = [...formPermissions, ...formTicketTypes.map(t => `view_tickets:${t}`)]
+
+    const viewTicketPerm = formPermissions.includes('view_tickets')
+    if (viewTicketPerm && formTicketTypes.length === 0) {
+      setError('Выберите хотя бы один тип заявок или "Все"')
+      return
+    }
+
+    const ticketPerms = formTicketTypes.includes('all')
+      ? ['view_tickets']
+      : formTicketTypes.map(t => `view_tickets:${t}`)
+
+    const allPerms = [...formPermissions.filter(p => p !== 'view_tickets'), ...ticketPerms]
+
     try {
       if (editRole) {
         await apiPost(`/api/roles/${editRole.id}`, { name: formName.trim(), permissions: allPerms })
@@ -82,6 +112,8 @@ export default function Roles() {
     } catch { /* ignore */ }
     setDeleteId(null)
   }
+
+  const viewTicketExpanded = formPermissions.includes('view_tickets')
 
   return (
     <div className="p-4 space-y-4">
@@ -104,6 +136,7 @@ export default function Roles() {
             </div>
             <div className="flex flex-wrap gap-1.5">
               {(role.permissions ?? []).map(p => {
+                if (p === 'view_tickets') return <span key={`${role.id}-view-all`} className="text-[10px] px-2 py-0.5 rounded-full bg-glamp-50 dark:bg-glamp-500/10 text-glamp-700 dark:text-white/80 border border-glamp-200 dark:border-glamp-500/20">Просмотр: Все</span>
                 const baseLabel = ALL_PERMISSIONS.find(ap => ap.key === p)?.label
                 const ticketLabel = p.startsWith('view_tickets:') ? TICKET_TYPES.find(t => t.key === p.split(':')[1])?.label : null
                 const label = baseLabel ?? (ticketLabel ? `Просмотр: ${ticketLabel}` : p)
@@ -134,12 +167,12 @@ export default function Roles() {
                         className="w-4 h-4 rounded border-gray-300 text-glamp-600 focus:ring-glamp-500" />
                       <span className="text-sm text-gray-700 dark:text-white/90">{p.label}</span>
                     </label>
-                    {p.hasSubtypes && formPermissions.includes('view_tickets') && (
+                    {p.hasSubtypes && viewTicketExpanded && (
                       <div className="ml-7 mt-1 flex flex-wrap gap-1.5">
                         {TICKET_TYPES.map(t => (
                           <label key={t.key} className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-gray-50 dark:bg-white/5 cursor-pointer transition-colors">
                             <input type="checkbox" checked={formTicketTypes.includes(t.key)}
-                              onChange={() => setFormTicketTypes(prev => prev.includes(t.key) ? prev.filter(x => x !== t.key) : [...prev, t.key])}
+                              onChange={() => toggleTicketType(t.key)}
                               className="w-3.5 h-3.5 rounded border-gray-300 text-glamp-600 focus:ring-glamp-500" />
                             <span className="text-xs text-gray-600 dark:text-white/70">{t.label}</span>
                           </label>

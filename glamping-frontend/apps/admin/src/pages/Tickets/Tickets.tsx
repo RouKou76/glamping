@@ -146,6 +146,13 @@ export default function Tickets() {
     return TYPE_CONFIG[t.type]?.label ?? t.type
   }
 
+  function canManageTicket(ticket: Task): boolean {
+    const type = ticket.type
+    return hasPermission('manage_tickets') ||
+           hasPermission('view_tickets') ||
+           hasPermission(`view_tickets:${type}`)
+  }
+
   const { notify } = useNotifications()
 
   useEffect(() => {
@@ -386,13 +393,13 @@ export default function Tickets() {
                       )
                     })()}
                     <div className="grid grid-cols-2 gap-2">
-                      {nextStatus && hasPermission('manage_tickets') && (
+                      {nextStatus && canManageTicket(ticket) && (
                         <button onClick={(e) => { e.stopPropagation(); handleStatusChange(ticket.id, nextStatus) }}
                           className={`py-2.5 rounded-xl text-xs font-bold text-white ${ticket.status === 'new' ? 'bg-amber-500' : ticket.status === 'in_progress' ? 'bg-blue-500' : 'bg-green-500'}`}>
                           {nextLabel}
                         </button>
                       )}
-                      {ticket.status === 'done' && hasPermission('manage_tickets') && (
+                      {ticket.status === 'done' && canManageTicket(ticket) && (
                         <button onClick={(e) => { e.stopPropagation(); handleArchive(ticket.id) }}
                           className="py-2.5 rounded-xl text-xs font-medium text-gray-600 dark:text-white/50 bg-gray-100 dark:bg-white/5">
                           В архив

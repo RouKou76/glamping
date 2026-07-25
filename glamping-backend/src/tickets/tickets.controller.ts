@@ -7,6 +7,7 @@ import {
   Body,
   Query,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -59,10 +60,28 @@ export class TicketsController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  @RequirePermissions('manage_tickets')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update ticket' })
-  async update(@Param('id') id: string, @Body() dto: UpdateTicketDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateTicketDto,
+    @CurrentUser() user?: { role?: { name: string; permissions: string[] } },
+  ) {
+    const ticket = await this.ticketsService.findById(id);
+    if (!ticket) {
+      return this.ticketsService.update(id, dto);
+    }
+
+    const isAdmin = user?.role?.name === 'admin';
+    const perms = user?.role?.permissions ?? [];
+    const hasGlobalManage = perms.includes('manage_tickets');
+    const hasAllView = perms.includes('view_tickets');
+    const hasTypeManage = perms.includes(`view_tickets:${ticket.type}`);
+
+    if (!isAdmin && !hasGlobalManage && !hasAllView && !hasTypeManage) {
+      throw new ForbiddenException('Нет прав для управления этим типом заявок');
+    }
+
     return this.ticketsService.update(id, dto);
   }
 }
