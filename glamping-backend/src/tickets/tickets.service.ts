@@ -184,7 +184,7 @@ export class TicketsService {
 
     void this.gateway.broadcastToAdmins('server:ticket:updated', result);
 
-    if (dto.status) {
+    if (dto.status && !this.gateway.hasConnectedAdmins()) {
       const statusLabels: Record<string, string> = {
         in_progress: 'В работе',
         done: 'Готово',

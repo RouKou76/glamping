@@ -135,7 +135,7 @@ export default function Roles() {
                 if (p === 'view_tickets') return <span key={`${role.id}-view-all`} className="text-[10px] px-2 py-0.5 rounded-full bg-glamp-50 dark:bg-glamp-500/10 text-glamp-700 dark:text-white/80 border border-glamp-200 dark:border-glamp-500/20">Просмотр: Все</span>
                 const baseLabel = ALL_PERMISSIONS.find(ap => ap.key === p)?.label
                 const ticketLabel = p.startsWith('view_tickets:') ? TICKET_TYPES.find(t => t.key === p.split(':')[1])?.label : null
-                const label = baseLabel ?? (ticketLabel ? `Просмотр: ${ticketLabel}` : p)
+                const label = baseLabel ?? (ticketLabel ? `Просмотр: ${ticketLabel}` : p === 'manage_tickets' ? 'Управление заявками' : p)
                 return <span key={`${role.id}-${p}`} className="text-[10px] px-2 py-0.5 rounded-full bg-glamp-50 dark:bg-glamp-500/10 text-glamp-700 dark:text-white/80 border border-glamp-200 dark:border-glamp-500/20">{label}</span>
               })}
               {(!role.permissions || role.permissions.length === 0) && <span className="text-xs text-gray-400 dark:text-white/30">Нет прав</span>}

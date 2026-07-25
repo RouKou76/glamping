@@ -20,7 +20,6 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Public } from '../common/decorators/public.decorator';
-import { RequirePermissions } from '../common/decorators/require-permissions.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 
 @ApiTags('tickets')
@@ -30,7 +29,6 @@ export class TicketsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @RequirePermissions('view_tickets')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get tickets' })
   @ApiQuery({ name: 'houseId', required: false })
@@ -42,6 +40,12 @@ export class TicketsController {
     @Query('assignedTo') assignedTo?: string,
     @CurrentUser() user?: { role?: { name: string; permissions: string[] } },
   ) {
+    const perms = user?.role?.permissions ?? [];
+    const hasTicketAccess = perms.some(p => p === 'view_tickets' || p.startsWith('view_tickets:'));
+    if (!hasTicketAccess) {
+      throw new ForbiddenException('Нет прав на просмотр заявок');
+    }
+
     return this.ticketsService.findAll({
       houseId,
       status,
