@@ -13,6 +13,8 @@ interface AuthContextType {
   loading: boolean
   login: (email: string, password: string) => Promise<void>
   logout: () => void
+  hasPermission: (permission: string) => boolean
+  hasAnyPermission: (...permissions: string[]) => boolean
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -20,6 +22,8 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   login: async () => {},
   logout: () => {},
+  hasPermission: () => false,
+  hasAnyPermission: () => false,
 })
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -55,8 +59,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }, [])
 
+  const hasPermission = useCallback((permission: string) => {
+    if (!user) return false
+    if (user.role.name === 'admin') return true
+    return user.role.permissions.includes(permission)
+  }, [user])
+
+  const hasAnyPermission = useCallback((...permissions: string[]) => {
+    return permissions.some(p => hasPermission(p))
+  }, [hasPermission])
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, hasPermission, hasAnyPermission }}>
       {children}
     </AuthContext.Provider>
   )

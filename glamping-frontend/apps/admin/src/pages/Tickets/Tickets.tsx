@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useApi, apiPost, useNotifications } from '@glamping/api'
 import type { Task, TaskStatus, House, Service } from '@glamping/types'
 import { Badge } from '@glamping/ui'
+import { useAuth } from '../../contexts/AuthContext'
 
 type FilterStatus = TaskStatus | 'all' | 'archived'
 type FilterType = string | 'all'
@@ -103,6 +104,7 @@ export default function Tickets() {
   const { data: apiHouses } = useApi<House[]>('/api/houses')
   const { data: apiServices } = useApi<Service[]>('/api/services?showInactive=true')
   const { data: apiMenu } = useApi<{ id: string; subcat?: string }[]>('/api/menu')
+  const { hasPermission } = useAuth()
   const [tickets, setTickets] = useState<Task[]>([])
   const [houses, setHouses] = useState<House[]>([])
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all')
@@ -384,13 +386,13 @@ export default function Tickets() {
                       )
                     })()}
                     <div className="grid grid-cols-2 gap-2">
-                      {nextStatus && (
+                      {nextStatus && hasPermission('manage_tickets') && (
                         <button onClick={(e) => { e.stopPropagation(); handleStatusChange(ticket.id, nextStatus) }}
                           className={`py-2.5 rounded-xl text-xs font-bold text-white ${ticket.status === 'new' ? 'bg-amber-500' : ticket.status === 'in_progress' ? 'bg-blue-500' : 'bg-green-500'}`}>
                           {nextLabel}
                         </button>
                       )}
-                      {ticket.status === 'done' && (
+                      {ticket.status === 'done' && hasPermission('manage_tickets') && (
                         <button onClick={(e) => { e.stopPropagation(); handleArchive(ticket.id) }}
                           className="py-2.5 rounded-xl text-xs font-medium text-gray-600 dark:text-white/50 bg-gray-100 dark:bg-white/5">
                           В архив

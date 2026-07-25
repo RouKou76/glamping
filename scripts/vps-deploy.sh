@@ -1,6 +1,6 @@
 #!/bin/bash
 # Деплой на VPS
-# Использование: ./scripts/deploy.sh
+# Использование: ./scripts/vps-deploy.sh
 # Предварительно: настроить SSH ключ для root@109.196.99.62
 
 set -euo pipefail
