@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { GatewayService } from '../gateway/gateway.service';
+import { PushService } from '../push/push.service';
 
 function escapeHtml(text: string): string {
   return text
@@ -16,6 +17,7 @@ export class MessagesService {
   constructor(
     private prisma: PrismaService,
     private gateway: GatewayService,
+    private push: PushService,
   ) {}
 
   async findByHouseId(houseId: string) {
@@ -104,6 +106,15 @@ export class MessagesService {
 
     this.gateway.sendToHouse(houseId, 'server:message:new', result);
     this.gateway.broadcastToAdmins('server:message:new', result);
+
+    if (!this.gateway.hasConnectedAdmins()) {
+      const house = await this.prisma.house.findUnique({ where: { id: houseId } });
+      void this.push.sendNotification({
+        title: 'Новое сообщение',
+        body: `Домик №${house?.number ?? '?'}: ${text.slice(0, 50)}`,
+        url: '/admin/chats',
+      });
+    }
 
     return result;
   }

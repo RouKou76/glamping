@@ -49,7 +49,7 @@ export class CatalogController {
 
   @Post(':catalogId/upload')
   @UseGuards(JwtAuthGuard)
-  @RequirePermissions('manage_settings')
+  @RequirePermissions('manage_catalog')
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Upload new catalog PDF version' })
@@ -78,7 +78,7 @@ export class CatalogController {
 
   @Post(':catalogId/switch')
   @UseGuards(JwtAuthGuard)
-  @RequirePermissions('manage_settings')
+  @RequirePermissions('manage_catalog')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Switch active catalog PDF version' })
   async switchVersion(@Param('catalogId') catalogId: string, @Body() dto: SwitchVersionDto) {

@@ -14,6 +14,7 @@ import { UpdateHouseDto } from './dto/update-house.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Public } from '../common/decorators/public.decorator';
 import { RequirePermissions } from '../common/decorators/require-permissions.decorator';
+import { RateLimitGuard } from '../common/guards/rate-limit.guard';
 
 @ApiTags('houses')
 @Controller('houses')
@@ -63,6 +64,7 @@ export class HousesController {
 
   @Post(':id/checkout-request')
   @Public()
+  @UseGuards(new RateLimitGuard(3, 60_000))
   @ApiOperation({ summary: 'Guest requests checkout' })
   async checkoutRequest(@Param('id') id: string) {
     return this.housesService.checkoutRequest(id);

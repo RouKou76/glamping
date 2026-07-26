@@ -16,6 +16,23 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+function RequirePermission({ permission, anyPermission, ticketAccess, children }: { permission?: string; anyPermission?: string[]; ticketAccess?: boolean; children: React.ReactNode }) {
+  const { hasPermission, hasAnyPermission, hasTicketAccess } = useAuth()
+  const allowed = ticketAccess ? hasTicketAccess() : anyPermission ? hasAnyPermission(...anyPermission) : hasPermission(permission ?? '')
+  if (!allowed) return <Navigate to="/" replace />
+  return <>{children}</>
+}
+
+function HomeRedirect() {
+  const { hasTicketAccess, hasPermission, hasAnyPermission } = useAuth()
+  if (hasTicketAccess()) return <Navigate to="/" replace />
+  if (hasAnyPermission('manage_menu', 'manage_services', 'manage_info', 'manage_catalog')) return <Navigate to="/manage" replace />
+  if (hasPermission('manage_chat')) return <Navigate to="/chats" replace />
+  if (hasAnyPermission('manage_roles', 'manage_users')) return <Navigate to="/staff" replace />
+  if (hasPermission('manage_houses')) return <Navigate to="/checkin" replace />
+  return <Navigate to="/" replace />
+}
+
 export default function App() {
   return (
     <ThemeProvider>
@@ -24,12 +41,12 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
-              <Route path="/" element={<Tickets />} />
-              <Route path="/checkin" element={<CheckIn />} />
-              <Route path="/manage" element={<Management />} />
-              <Route path="/chats" element={<Chats />} />
-              <Route path="/staff" element={<Staff />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="/" element={<RequirePermission ticketAccess><Tickets /></RequirePermission>} />
+              <Route path="/checkin" element={<RequirePermission permission="manage_houses"><CheckIn /></RequirePermission>} />
+              <Route path="/manage" element={<RequirePermission anyPermission={['manage_menu', 'manage_services', 'manage_info', 'manage_catalog']}><Management /></RequirePermission>} />
+              <Route path="/chats" element={<RequirePermission permission="manage_chat"><Chats /></RequirePermission>} />
+              <Route path="/staff" element={<RequirePermission anyPermission={['manage_roles', 'manage_users']}><Staff /></RequirePermission>} />
+              <Route path="*" element={<HomeRedirect />} />
             </Route>
           </Routes>
         </BrowserRouter>

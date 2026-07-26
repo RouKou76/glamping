@@ -21,6 +21,7 @@ import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Public } from '../common/decorators/public.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { RateLimitGuard } from '../common/guards/rate-limit.guard';
 
 @ApiTags('tickets')
 @Controller('tickets')
@@ -57,6 +58,7 @@ export class TicketsController {
 
   @Post()
   @Public()
+  @UseGuards(new RateLimitGuard(10, 60_000))
   @ApiOperation({ summary: 'Create ticket (guest device)' })
   async create(@Body() dto: CreateTicketDto) {
     return this.ticketsService.create(dto);

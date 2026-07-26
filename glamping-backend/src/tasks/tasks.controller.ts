@@ -6,6 +6,7 @@ import {
   Body,
   Query,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,6 +19,7 @@ import { CreateTicketDto } from '../tickets/dto/create-ticket.dto';
 import { UpdateTicketDto } from '../tickets/dto/update-ticket.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Public } from '../common/decorators/public.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 
 @ApiTags('tasks')
 @Controller('tasks')
@@ -35,8 +37,21 @@ export class TasksController {
     @Query('houseId') houseId?: string,
     @Query('status') status?: string,
     @Query('assignedTo') assignedTo?: string,
+    @CurrentUser() user?: { role?: { name: string; permissions: string[] } },
   ) {
-    return this.ticketsService.findAll({ houseId, status, assignedTo });
+    const perms = user?.role?.permissions ?? [];
+    const hasTicketAccess = perms.some(p => p === 'view_tickets' || p.startsWith('view_tickets:'));
+    if (!hasTicketAccess) {
+      throw new ForbiddenException('Нет прав на просмотр заявок');
+    }
+
+    return this.ticketsService.findAll({
+      houseId,
+      status,
+      assignedTo,
+      userRole: user?.role?.name,
+      userPermissions: user?.role?.permissions,
+    });
   }
 
   @Post()
@@ -50,7 +65,24 @@ export class TasksController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update task status' })
-  async update(@Param('id') id: string, @Body() dto: UpdateTicketDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateTicketDto,
+    @CurrentUser() user?: { role?: { name: string; permissions: string[] } },
+  ) {
+    const ticket = await this.ticketsService.findById(id);
+    if (ticket) {
+      const isAdmin = user?.role?.name === 'admin';
+      const perms = user?.role?.permissions ?? [];
+      const hasGlobalManage = perms.includes('manage_tickets');
+      const hasAllView = perms.includes('view_tickets');
+      const hasTypeView = perms.includes(`view_tickets:${ticket.type}`);
+
+      if (!isAdmin && !hasGlobalManage && !hasAllView && !hasTypeView) {
+        throw new ForbiddenException('Нет прав для управления этим типом заявок');
+      }
+    }
+
     return this.ticketsService.update(id, dto);
   }
 
@@ -58,7 +90,23 @@ export class TasksController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Cancel task' })
-  async cancel(@Param('id') id: string) {
+  async cancel(
+    @Param('id') id: string,
+    @CurrentUser() user?: { role?: { name: string; permissions: string[] } },
+  ) {
+    const ticket = await this.ticketsService.findById(id);
+    if (ticket) {
+      const isAdmin = user?.role?.name === 'admin';
+      const perms = user?.role?.permissions ?? [];
+      const hasGlobalManage = perms.includes('manage_tickets');
+      const hasAllView = perms.includes('view_tickets');
+      const hasTypeView = perms.includes(`view_tickets:${ticket.type}`);
+
+      if (!isAdmin && !hasGlobalManage && !hasAllView && !hasTypeView) {
+        throw new ForbiddenException('Нет прав для управления этим типом заявок');
+      }
+    }
+
     return this.ticketsService.update(id, { status: 'archived' });
   }
 }

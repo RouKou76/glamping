@@ -15,6 +15,7 @@ interface AuthContextType {
   logout: () => void
   hasPermission: (permission: string) => boolean
   hasAnyPermission: (...permissions: string[]) => boolean
+  hasTicketAccess: () => boolean
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -24,6 +25,7 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {},
   hasPermission: () => false,
   hasAnyPermission: () => false,
+  hasTicketAccess: () => false,
 })
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -69,8 +71,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return permissions.some(p => hasPermission(p))
   }, [hasPermission])
 
+  const hasTicketAccess = useCallback(() => {
+    if (!user) return false
+    if (user.role.name === 'admin') return true
+    return user.role.permissions.some(p =>
+      p === 'view_tickets' || p.startsWith('view_tickets:') || p === 'manage_tickets'
+    )
+  }, [user])
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, hasPermission, hasAnyPermission }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, hasPermission, hasAnyPermission, hasTicketAccess }}>
       {children}
     </AuthContext.Provider>
   )

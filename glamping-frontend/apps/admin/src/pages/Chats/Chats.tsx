@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { useApi, apiPost } from '@glamping/api'
+import { useApi, apiPost, apiGet } from '@glamping/api'
 import type { Message, House } from '@glamping/types'
 
 interface HistorySession {
@@ -74,9 +74,8 @@ export default function Chats() {
     if (!activeHouseId) return
     setLoadingHistory(true)
     try {
-      const res = await fetch(`/api/messages/history/${activeHouseId}`)
-      const data = await res.json()
-      setHistory(data.data || data)
+      const data = await apiGet<HistorySession[]>(`/api/messages/history/${activeHouseId}`)
+      setHistory(data)
     } catch { /* ignore */ }
     setLoadingHistory(false)
     setShowHistory(true)

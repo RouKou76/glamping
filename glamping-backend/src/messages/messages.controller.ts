@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Param, Body, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Post, Param, Body, Query, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Public } from '../common/decorators/public.decorator';
+import { RequirePermissions } from '../common/decorators/require-permissions.decorator';
 
 @ApiTags('messages')
 @Controller('messages')
@@ -26,14 +28,18 @@ export class MessagesController {
   }
 
   @Post(':id/read')
-  @Public()
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions('manage_chat')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Mark message as read' })
   async markAsRead(@Param('id') id: string) {
     return this.messagesService.markAsRead(id);
   }
 
   @Get('history/:houseId')
-  @Public()
+  @UseGuards(JwtAuthGuard)
+  @RequirePermissions('manage_chat')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get chat history by house' })
   async findHistory(@Param('houseId') houseId: string) {
     return this.messagesService.findHistoryByHouseId(houseId);

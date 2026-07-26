@@ -16,8 +16,8 @@ interface TabDef {
 const TABS: TabDef[] = [
   { id: 'menu', label: 'Меню', permission: 'manage_menu' },
   { id: 'services', label: 'Услуги', permission: 'manage_services' },
-  { id: 'info', label: 'Инфо', permission: 'manage_settings' },
-  { id: 'catalog', label: 'PDF каталоги', permission: 'manage_settings' },
+  { id: 'info', label: 'Инфо', permission: 'manage_info' },
+  { id: 'catalog', label: 'PDF каталоги', permission: 'manage_catalog' },
 ]
 
 export default function Management() {

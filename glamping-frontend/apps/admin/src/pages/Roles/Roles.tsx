@@ -17,7 +17,8 @@ const ALL_PERMISSIONS = [
   { key: 'manage_menu', label: 'Управление меню' },
   { key: 'view_tickets', label: 'Просмотр и управление заявками', hasSubtypes: true },
   { key: 'manage_chat', label: 'Управление чатом' },
-  { key: 'manage_settings', label: 'Управление настройками' },
+  { key: 'manage_info', label: 'Управление информацией' },
+  { key: 'manage_catalog', label: 'Управление каталогами' },
   { key: 'manage_roles', label: 'Управление ролями' },
 ]
 
@@ -41,23 +42,25 @@ export default function Roles() {
   const [formPermissions, setFormPermissions] = useState<string[]>([])
   const [formTicketTypes, setFormTicketTypes] = useState<string[]>([])
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [deleteUserCount, setDeleteUserCount] = useState(0)
+  const [deleteError, setDeleteError] = useState('')
   const [error, setError] = useState('')
 
   useEffect(() => { if (apiRoles) setRoles(apiRoles) }, [apiRoles])
 
   function openCreate() { setEditRole(null); setFormName(''); setFormPermissions([]); setFormTicketTypes([]); setError(''); setShowForm(true) }
   function openEdit(role: Role) {
-    const perms = role.permissions ?? []
     setEditRole(role)
     setFormName(role.name)
-    setFormPermissions(perms.filter(p => !p.startsWith('view_tickets:')))
-
-    const hasAllView = perms.includes('view_tickets')
-    const ticketPerms = perms.filter(p => p.startsWith('view_tickets:')).map(p => p.split(':')[1])
-    if (hasAllView && ticketPerms.length === 0) {
+    if (role.name === 'admin') {
+      setFormPermissions(ALL_PERMISSIONS.filter(p => !p.hasSubtypes).map(p => p.key))
       setFormTicketTypes(['all'])
     } else {
-      setFormTicketTypes(ticketPerms)
+      const perms = role.permissions ?? []
+      setFormPermissions(perms.filter(p => !p.startsWith('view_tickets') && p !== 'manage_tickets'))
+      const hasAllView = perms.includes('view_tickets')
+      const ticketPerms = perms.filter(p => p.startsWith('view_tickets:')).map(p => p.split(':')[1])
+      setFormTicketTypes(hasAllView && ticketPerms.length === 0 ? ['all'] : ticketPerms)
     }
     setError('')
     setShowForm(true)
@@ -78,12 +81,8 @@ export default function Roles() {
   }
 
   async function handleSave() {
+    if (editRole?.name === 'admin') { setError('Нельзя изменить права администратора'); return }
     if (!formName.trim()) { setError('Введите название роли'); return }
-
-    if (formTicketTypes.length === 0) {
-      setError('Выберите хотя бы один тип заявок')
-      return
-    }
 
     const ticketPerms = formTicketTypes.includes('all')
       ? ['view_tickets']
@@ -99,7 +98,7 @@ export default function Roles() {
       }
       setShowForm(false)
       refetch()
-    } catch { setError('Ошибка сохранения') }
+    } catch (e: any) { setError(e?.response?.data?.message || 'Ошибка сохранения') }
   }
 
   async function handleDelete() {
@@ -107,8 +106,8 @@ export default function Roles() {
     try {
       await apiDelete(`/api/roles/${deleteId}`)
       setRoles(prev => prev.filter(r => r.id !== deleteId))
-    } catch { /* ignore */ }
-    setDeleteId(null)
+      setDeleteId(null)
+    } catch { setDeleteError('Нельзя удалить роль с привязанными пользователями. Сначала назначьте им другую роль.') }
   }
 
   return (
@@ -127,7 +126,7 @@ export default function Roles() {
               </div>
               <div className="flex gap-2">
                 <button onClick={() => openEdit(role)} className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">Изменить</button>
-                {role.name !== 'admin' && <button onClick={() => setDeleteId(role.id)} className="text-xs px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-500/20 text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">Удалить</button>}
+                {role.name !== 'admin' && <button onClick={() => { setDeleteId(role.id); setDeleteUserCount(role.userCount); setDeleteError('') }} className="text-xs px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-500/20 text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">Удалить</button>}
               </div>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -135,10 +134,13 @@ export default function Roles() {
                 if (p === 'view_tickets') return <span key={`${role.id}-view-all`} className="text-[10px] px-2 py-0.5 rounded-full bg-glamp-50 dark:bg-glamp-500/10 text-glamp-700 dark:text-white/80 border border-glamp-200 dark:border-glamp-500/20">Просмотр: Все</span>
                 const baseLabel = ALL_PERMISSIONS.find(ap => ap.key === p)?.label
                 const ticketLabel = p.startsWith('view_tickets:') ? TICKET_TYPES.find(t => t.key === p.split(':')[1])?.label : null
-                const label = baseLabel ?? (ticketLabel ? `Просмотр: ${ticketLabel}` : p === 'manage_tickets' ? 'Управление заявками' : p)
+                const legacyLabel = p === 'manage_settings' ? 'Управление настройками' : p === 'manage_tickets' ? 'Управление заявками' : null
+                const label = baseLabel ?? legacyLabel ?? (ticketLabel ? `Просмотр: ${ticketLabel}` : p)
                 return <span key={`${role.id}-${p}`} className="text-[10px] px-2 py-0.5 rounded-full bg-glamp-50 dark:bg-glamp-500/10 text-glamp-700 dark:text-white/80 border border-glamp-200 dark:border-glamp-500/20">{label}</span>
               })}
-              {(!role.permissions || role.permissions.length === 0) && <span className="text-xs text-gray-400 dark:text-white/30">Нет прав</span>}
+              {role.name === 'admin'
+                ? <span className="text-[10px] px-2 py-0.5 rounded-full bg-glamp-50 dark:bg-glamp-500/10 text-glamp-700 dark:text-white/80 border border-glamp-200 dark:border-glamp-500/20">Полный доступ</span>
+                : (!role.permissions || role.permissions.length === 0) && <span className="text-xs text-gray-400 dark:text-white/30">Нет прав</span>}
             </div>
           </div>
         ))}
@@ -157,20 +159,20 @@ export default function Roles() {
               <label className="text-xs font-bold text-gray-600 dark:text-white/60 mb-2 block">Права доступа</label>
               <div className="space-y-2">
                 {ALL_PERMISSIONS.filter(p => !p.hasSubtypes).map(p => (
-                  <label key={p.key} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 cursor-pointer transition-colors">
+                  <label key={p.key} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-white/10">
                     <input type="checkbox" checked={formPermissions.includes(p.key)} onChange={() => togglePermission(p.key)}
-                      className="w-4 h-4 rounded border-gray-300 text-glamp-600 focus:ring-glamp-500" />
+                      className="w-5 h-5 rounded border-gray-300 text-glamp-600 focus:ring-glamp-500" />
                     <span className="text-sm text-gray-700 dark:text-white/90">{p.label}</span>
                   </label>
                 ))}
-                <div className="p-2 rounded-lg bg-gray-50 dark:bg-white/5 space-y-2">
+                <div className="px-3 py-2 rounded-lg bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 space-y-1.5">
                   <p className="text-sm font-bold text-gray-700 dark:text-white/90">Просмотр и управление заявками</p>
                   <div className="flex flex-wrap gap-1.5">
                     {TICKET_TYPES.map(t => (
-                      <label key={t.key} className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-white/10">
+                      <label key={t.key} className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-gray-100 dark:bg-white/10 cursor-pointer transition-colors hover:bg-gray-200 dark:hover:bg-white/15">
                         <input type="checkbox" checked={formTicketTypes.includes(t.key)}
                           onChange={() => toggleTicketType(t.key)}
-                          className="w-3.5 h-3.5 rounded border-gray-300 text-glamp-600 focus:ring-glamp-500" />
+                          className="w-5 h-5 rounded border-gray-300 text-glamp-600 focus:ring-glamp-500" />
                         <span className="text-xs text-gray-600 dark:text-white/70">{t.label}</span>
                       </label>
                     ))}
@@ -186,7 +188,17 @@ export default function Roles() {
           </div>
         </div>
       )}
-      <ConfirmDialog open={!!deleteId} title="Удалить роль?" message="Роль будет удалена. Пользователи с этой ролью потеряют доступ." confirmLabel="Удалить" onConfirm={handleDelete} onClose={() => setDeleteId(null)} />
+      <ConfirmDialog
+        open={!!deleteId}
+        title={deleteUserCount > 0 ? 'Удалить роль?' : 'Удалить роль?'}
+        message={deleteUserCount > 0
+          ? `У роли ${deleteUserCount} ${deleteUserCount === 1 ? 'пользователь' : deleteUserCount < 5 ? 'пользователя' : 'пользователей'}. Сначала назначьте им другую роль, иначе они потеряют доступ.`
+          : 'Роль будет удалена. Это действие нельзя отменить.'}
+        confirmLabel="Удалить"
+        onConfirm={handleDelete}
+        onClose={() => { setDeleteId(null); setDeleteError('') }}
+      />
+      {deleteError && <p className="text-sm text-red-500 text-center">{deleteError}</p>}
     </div>
   )
 }

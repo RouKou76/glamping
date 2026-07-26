@@ -20,7 +20,7 @@ export class InfoController {
 
   @Put()
   @UseGuards(JwtAuthGuard)
-  @RequirePermissions('manage_settings')
+  @RequirePermissions('manage_info')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update settings/info' })
   async updateInfo(@Body() dto: UpdateInfoDto) {
