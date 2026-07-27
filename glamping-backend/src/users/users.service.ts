@@ -20,7 +20,7 @@ export class UsersService {
 
     return users.map((u) => ({
       id: u.id,
-      email: u.email,
+      login: u.login,
       name: u.name,
       roleId: u.roleId,
       role: u.role?.name ?? 'Нет роли',
@@ -30,11 +30,11 @@ export class UsersService {
 
   async create(dto: CreateUserDto) {
     const existing = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { login: dto.login },
     });
     if (existing)
       throw new BadRequestException(
-        'Пользователь с таким email уже существует',
+        'Пользователь с таким логином уже существует',
       );
 
     const role = await this.prisma.role.findUnique({
@@ -46,7 +46,7 @@ export class UsersService {
 
     return this.prisma.user.create({
       data: {
-        email: dto.email,
+        login: dto.login,
         passwordHash,
         name: dto.name,
         roleId: dto.roleId,
@@ -81,7 +81,7 @@ export class UsersService {
   async remove(id: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('Пользователь не найден');
-    if (user.email === 'admin@glamping.com')
+    if (user.login === 'admin')
       throw new BadRequestException('Нельзя удалить главного администратора');
 
     return this.prisma.user.delete({ where: { id } });

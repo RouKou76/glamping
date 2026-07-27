@@ -4,7 +4,7 @@ import { ConfirmDialog } from '@glamping/ui'
 
 interface User {
   id: string
-  email: string
+  login: string
   name: string
   roleId: string
   role: string
@@ -23,7 +23,7 @@ export default function Users() {
   const [roles, setRoles] = useState<Role[]>([])
   const [showForm, setShowForm] = useState(false)
   const [editUser, setEditUser] = useState<User | null>(null)
-  const [formEmail, setFormEmail] = useState('')
+  const [formLogin, setFormLogin] = useState('')
   const [formPassword, setFormPassword] = useState('')
   const [formName, setFormName] = useState('')
   const [formRoleId, setFormRoleId] = useState('')
@@ -33,11 +33,11 @@ export default function Users() {
   useEffect(() => { if (apiUsers) setUsers(apiUsers) }, [apiUsers])
   useEffect(() => { if (apiRoles) setRoles(apiRoles) }, [apiRoles])
 
-  function openCreate() { setEditUser(null); setFormEmail(''); setFormPassword(''); setFormName(''); setFormRoleId(roles[0]?.id ?? ''); setError(''); setShowForm(true) }
-  function openEdit(user: User) { setEditUser(user); setFormEmail(user.email); setFormPassword(''); setFormName(user.name); setFormRoleId(user.roleId); setError(''); setShowForm(true) }
+  function openCreate() { setEditUser(null); setFormLogin(''); setFormPassword(''); setFormName(''); setFormRoleId(roles[0]?.id ?? ''); setError(''); setShowForm(true) }
+  function openEdit(user: User) { setEditUser(user); setFormLogin(user.login); setFormPassword(''); setFormName(user.name); setFormRoleId(user.roleId); setError(''); setShowForm(true) }
 
   async function handleSave() {
-    if (!formEmail.trim() || !formName.trim() || !formRoleId) { setError('Заполните все поля'); return }
+    if (!formLogin.trim() || !formName.trim() || !formRoleId) { setError('Заполните все поля'); return }
     if (!editUser && !formPassword) { setError('Введите пароль'); return }
     try {
       if (editUser) {
@@ -45,7 +45,7 @@ export default function Users() {
         if (formPassword) payload.password = formPassword
         await apiPost(`/api/users/${editUser.id}`, payload)
       } else {
-        await apiPost('/api/users', { email: formEmail.trim(), password: formPassword, name: formName.trim(), roleId: formRoleId })
+        await apiPost('/api/users', { login: formLogin.trim(), password: formPassword, name: formName.trim(), roleId: formRoleId })
       }
       setShowForm(false)
       refetch()
@@ -73,12 +73,12 @@ export default function Users() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-base font-bold text-gray-800 dark:text-white">{user.name}</p>
-                <p className="text-xs text-gray-500 dark:text-white/50">{user.email}</p>
+                <p className="text-xs text-gray-500 dark:text-white/50">{user.login}</p>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-glamp-50 dark:bg-glamp-500/10 text-glamp-700 dark:text-white/80 border border-glamp-200 dark:border-glamp-500/20 mt-1 inline-block">{user.role}</span>
               </div>
               <div className="flex gap-2">
                 <button onClick={() => openEdit(user)} className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">Изменить</button>
-                {user.email !== 'admin@glamping.com' && <button onClick={() => setDeleteId(user.id)} className="text-xs px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-500/20 text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">Удалить</button>}
+                {user.login !== 'admin' && <button onClick={() => setDeleteId(user.id)} className="text-xs px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-500/20 text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">Удалить</button>}
               </div>
             </div>
           </div>
@@ -90,8 +90,8 @@ export default function Users() {
           <div className="w-full bg-gray-50 dark:bg-[#1a1d27] rounded-t-3xl p-6 space-y-4 animate-slide-up" onClick={e => e.stopPropagation()}>
             <h3 className="text-xl font-bold text-gray-800 dark:text-white">{editUser ? 'Редактировать пользователя' : 'Новый пользователь'}</h3>
             <div>
-              <label className="text-xs font-bold text-gray-600 dark:text-white/60 mb-1 block">Email</label>
-              <input type="email" value={formEmail} onChange={e => setFormEmail(e.target.value)} disabled={!!editUser}
+              <label className="text-xs font-bold text-gray-600 dark:text-white/60 mb-1 block">Логин</label>
+              <input type="text" value={formLogin} onChange={e => setFormLogin(e.target.value)} disabled={!!editUser}
                 className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500 disabled:opacity-50" />
             </div>
             <div>

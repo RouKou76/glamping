@@ -175,7 +175,7 @@ export default function Chats() {
         <div ref={bottomRef} />
       </div>
       {!showHistory && (
-        <div className="p-3 bg-white dark:bg-[#1a1d27] border-t border-gray-200 dark:border-white/10 flex gap-2 items-center">
+        <div className="sticky bottom-0 z-10 p-3 bg-white dark:bg-[#1a1d27] border-t border-gray-200 dark:border-white/10 flex gap-2 items-center">
           <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()}
             placeholder={activeHouse ? `Сообщение в Домик #${activeHouse.number}...` : 'Выберите домик'}
             className="flex-1 bg-gray-100 dark:bg-white/5 px-4 py-3 rounded-full outline-none text-sm text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-white/30" />

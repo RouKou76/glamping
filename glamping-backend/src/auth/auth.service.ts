@@ -26,7 +26,7 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { login: dto.login },
       include: { role: true },
     });
 
@@ -39,7 +39,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const tokens = await this.generateTokens(user.id, user.email);
+    const tokens = await this.generateTokens(user.id, user.login);
     await this.prisma.user.update({
       where: { id: user.id },
       data: { refreshToken: tokens.refreshToken },
@@ -50,7 +50,7 @@ export class AuthService {
       refreshToken: tokens.refreshToken,
       user: {
         id: user.id,
-        email: user.email,
+        login: user.login,
         name: user.name,
         role: user.role,
       },
@@ -71,7 +71,7 @@ export class AuthService {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
-      const tokens = await this.generateTokens(user.id, user.email);
+    const tokens = await this.generateTokens(user.id, user.login);
       await this.prisma.user.update({
         where: { id: user.id },
         data: { refreshToken: tokens.refreshToken },
@@ -98,14 +98,14 @@ export class AuthService {
 
     return {
       id: user.id,
-      email: user.email,
+      login: user.login,
       name: user.name,
       role: user.role,
     };
   }
 
-  private async generateTokens(userId: string, email: string) {
-    const payload = { sub: userId, email };
+  private async generateTokens(userId: string, login: string) {
+    const payload = { sub: userId, login };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload),

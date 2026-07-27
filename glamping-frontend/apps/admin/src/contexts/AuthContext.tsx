@@ -3,7 +3,7 @@ import { apiPost, apiGet, subscribeToPush, unsubscribeFromPush } from '@glamping
 
 interface User {
   id: string
-  email: string
+  login: string
   name: string
   role: { name: string; permissions: string[] }
 }
@@ -11,7 +11,7 @@ interface User {
 interface AuthContextType {
   user: User | null
   loading: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (login: string, password: string) => Promise<void>
   logout: () => void
   hasPermission: (permission: string) => boolean
   hasAnyPermission: (...permissions: string[]) => boolean
@@ -47,8 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setLoading(false))
   }, [])
 
-  const login = useCallback(async (email: string, password: string) => {
-    const res = await apiPost<{ accessToken: string; user: User }>('/api/auth/login', { email, password })
+  const login = useCallback(async (login: string, password: string) => {
+    const res = await apiPost<{ accessToken: string; user: User }>('/api/auth/login', { login, password })
     localStorage.setItem('glamp-token', res.accessToken)
     setUser(res.user)
     subscribeToPush()

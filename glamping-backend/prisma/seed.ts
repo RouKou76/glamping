@@ -30,18 +30,18 @@ async function main() {
   // Create users for each role
   const passwordHash = await argon2.hash('admin123');
   const users = [
-    { email: 'admin@glamping.com', name: 'Admin', roleName: 'admin' },
-    { email: 'cook@glamping.com', name: 'Повар', roleName: 'cook' },
-    { email: 'cleaning@glamping.com', name: 'Клининг', roleName: 'cleaning' },
-    { email: 'driver@glamping.com', name: 'Водитель', roleName: 'driver' },
+    { login: 'admin', name: 'Admin', roleName: 'admin' },
+    { login: 'cook', name: 'Повар', roleName: 'cook' },
+    { login: 'cleaning', name: 'Клининг', roleName: 'cleaning' },
+    { login: 'driver', name: 'Водитель', roleName: 'driver' },
   ];
 
   for (const user of users) {
     await prisma.user.upsert({
-      where: { email: user.email },
+      where: { login: user.login },
       update: {},
       create: {
-        email: user.email,
+        login: user.login,
         passwordHash,
         name: user.name,
         roleId: roleMap[user.roleName],

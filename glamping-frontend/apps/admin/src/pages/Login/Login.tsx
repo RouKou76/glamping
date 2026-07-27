@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext'
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const [loginValue, setLoginValue] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -15,10 +15,10 @@ export default function Login() {
     setError('')
     setSubmitting(true)
     try {
-      await login(email, password)
+      await login(loginValue, password)
       navigate('/')
     } catch {
-      setError('Неверный email или пароль')
+      setError('Неверный логин или пароль')
     } finally {
       setSubmitting(false)
     }
@@ -38,8 +38,8 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-xs font-bold text-gray-600 dark:text-white/60 uppercase tracking-wider mb-1.5 block">Email</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
+              <label className="text-xs font-bold text-gray-600 dark:text-white/60 uppercase tracking-wider mb-1.5 block">Логин</label>
+              <input type="text" value={loginValue} onChange={e => setLoginValue(e.target.value)} required
                 className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500 transition-colors" />
             </div>
             <div>
