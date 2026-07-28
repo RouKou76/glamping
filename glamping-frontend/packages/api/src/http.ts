@@ -63,8 +63,9 @@ async function fetchWithRefresh<T>(url: string, options: RequestInit): Promise<T
       })
     } else {
       localStorage.removeItem('glamp-token')
-      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-        window.location.href = '/login'
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login' && window.location.pathname !== '/admin/login') {
+        const loginPath = window.location.pathname.startsWith('/admin') ? '/admin/login' : '/login'
+        window.location.href = loginPath
       }
       throw new Error('Session expired')
     }
