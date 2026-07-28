@@ -8,6 +8,7 @@ export type TaskType =
   | 'minibar'
   | 'gates'
   | 'custom'
+  | 'quadbike'
 
 export type TaskStatus =
   | 'new'

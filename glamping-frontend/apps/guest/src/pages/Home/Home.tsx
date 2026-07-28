@@ -13,7 +13,7 @@ import { OrderForm, type OrderStep } from './OrderForm'
 
 const SERVICE_COLORS: Record<string, string> = { cs1: 'bg-amber-500', cs2: 'bg-emerald-500' }
 
-type ActiveModal = ConfirmSheetType | 'food' | 'minibar' | 'transfer' | 'cleaning' | 'checkout' | null
+type ActiveModal = ConfirmSheetType | 'food' | 'minibar' | 'transfer' | 'cleaning' | 'quadbike' | 'checkout' | null
 
 export default function Home() {
   const { t } = useTranslation()
@@ -64,6 +64,14 @@ export default function Home() {
         { type: 'time', key: 'time', label: t('food.time'), required: true },
       ],
       message: t('cleaning.successMsg'),
+    },
+    quadbike: {
+      title: t('quadbike.title'),
+      steps: [
+        { type: 'date', key: 'date', label: t('food.date') },
+        { type: 'time', key: 'time', label: t('food.time'), required: true },
+      ],
+      message: t('quadbike.successMsg'),
     },
     towels: {
       title: t('towels.title'),
@@ -124,6 +132,7 @@ export default function Home() {
         <ServiceTile icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>} label={t('home.transfer')} color="bg-blue-500" onClick={() => { refetchServices(); setActiveModal('transfer') }} />
         <ServiceTile icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>} label={t('home.cleaning')} color="bg-teal-500" onClick={() => { refetchServices(); setActiveModal('cleaning') }} />
         <ServiceTile icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.8 19.6A2 2 0 1 0 14 16H2"/><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"/><path d="M9.8 4.4A2 2 0 1 1 11 8H2"/></svg>} label={t('home.towels')} color="bg-cyan-500" onClick={() => { refetchServices(); setActiveModal('towels') }} />
+        <ServiceTile icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3-3 4-3 2 3h2"/></svg>} label={t('home.quadbike')} color="bg-orange-600" onClick={() => { refetchServices(); setActiveModal('quadbike') }} />
         <ServiceTile icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></svg>} label={t('home.minibar')} color="bg-purple-500" onClick={() => { refetchServices(); setActiveModal('minibar') }} />
 
         <ServiceTile icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>} label={t('home.andetta')} color="bg-rose-500" onClick={() => navigate('/catalog/andetta')} />
@@ -166,7 +175,7 @@ export default function Home() {
 
       {activeModal === 'checkout' && <CheckoutSheet open={true} onClose={() => setActiveModal(null)} onConfirm={handleCheckout} />}
 
-      {(activeModal === 'food' || activeModal === 'transfer' || activeModal === 'cleaning' || activeModal === 'towels') && activeModal && (
+      {(activeModal === 'food' || activeModal === 'transfer' || activeModal === 'cleaning' || activeModal === 'quadbike' || activeModal === 'towels') && activeModal && (
         <OrderForm
           open={true}
           title={SERVICE_CONFIGS[activeModal].title}

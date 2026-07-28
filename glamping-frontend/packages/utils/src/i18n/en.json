@@ -13,6 +13,7 @@
     "transfer": "Transfer",
     "cleaning": "Cleaning",
     "towels": "Towel Replacement",
+    "quadbike": "Quad Bike Ride",
     "gates": "Open Gates",
     "andetta": "ANDETTA Products",
     "suveniry": "Souvenirs & Treats from Ivanovo",
@@ -86,6 +87,19 @@
     "readyHint": "Please be ready to vacate the cottage during cleaning.",
     "success": "Request accepted!",
     "successMsg": "Cleaning will be done at the specified time.",
+    "required": "Please select date and time",
+    "futureOnly": "Please select a future time"
+  },
+  "quadbike": {
+    "title": "Quad Bike Ride",
+    "description": "Choose a convenient time for a quad bike ride.",
+    "datetime": "Date and Time",
+    "next": "Next",
+    "back": "← Back",
+    "submit": "Confirm",
+    "readyHint": "Please be ready to start at the scheduled time.",
+    "success": "Request accepted!",
+    "successMsg": "Quad bike ride has been scheduled.",
     "required": "Please select date and time",
     "futureOnly": "Please select a future time"
   },

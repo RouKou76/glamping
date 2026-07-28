@@ -15,6 +15,7 @@ async function main() {
     { name: 'cook', permissions: ['view_tickets:food', 'view_tickets:minibar'] },
     { name: 'cleaning', permissions: ['view_tickets:cleaning'] },
     { name: 'driver', permissions: ['view_tickets:transfer'] },
+    { name: 'quadbike', permissions: ['view_tickets:quadbike'] },
   ];
 
   const roleMap: Record<string, string> = {};
@@ -34,6 +35,7 @@ async function main() {
     { login: 'cook', name: 'Повар', roleName: 'cook' },
     { login: 'cleaning', name: 'Клининг', roleName: 'cleaning' },
     { login: 'driver', name: 'Водитель', roleName: 'driver' },
+    { login: 'quadbike', name: 'Квадроциклы', roleName: 'quadbike' },
   ];
 
   for (const user of users) {
