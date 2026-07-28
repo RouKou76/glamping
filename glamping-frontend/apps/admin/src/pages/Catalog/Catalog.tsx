@@ -19,6 +19,7 @@ function CatalogSection({ catalogId, title }: CatalogSectionProps) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [uploadError, setUploadError] = useState(false)
 
   const hasPdf = !!data?.current || !!data?.previous
 
@@ -26,6 +27,7 @@ function CatalogSection({ catalogId, title }: CatalogSectionProps) {
     const file = fileRef.current?.files?.[0]
     if (!file) return
     setUploading(true)
+    setUploadError(false)
     let ok = false
     try {
       const formData = new FormData()
@@ -46,6 +48,9 @@ function CatalogSection({ catalogId, title }: CatalogSectionProps) {
       setSuccess(true)
       setTimeout(() => setSuccess(false), 2500)
       if (fileRef.current) fileRef.current.value = ''
+    } else {
+      setUploadError(true)
+      setTimeout(() => setUploadError(false), 4000)
     }
     setUploading(false)
   }
@@ -150,6 +155,11 @@ function CatalogSection({ catalogId, title }: CatalogSectionProps) {
         {success && (
           <p className="text-sm text-green-600 dark:text-green-400 text-center font-medium">
             ✓ Новая версия загружена
+          </p>
+        )}
+        {uploadError && (
+          <p className="text-sm text-red-600 dark:text-red-400 text-center font-medium">
+            Ошибка загрузки. Проверьте файл и попробуйте снова.
           </p>
         )}
       </div>
