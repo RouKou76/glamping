@@ -60,7 +60,8 @@ export async function subscribeToPush(): Promise<boolean> {
     )
 
     return true
-  } catch {
+  } catch (e) {
+    console.warn('[Push] subscribe failed:', e)
     return false
   }
 }

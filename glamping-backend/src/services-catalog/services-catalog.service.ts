@@ -129,17 +129,23 @@ export class ServicesCatalogService {
     const booked = await this.prisma.ticket.findMany({
       where: {
         type: 'custom',
-        description: { startsWith: `[${service.name}]` },
+        OR: [
+          { serviceName: service.name },
+          { description: { startsWith: `[${service.name}]` } },
+        ],
         status: { not: 'archived' },
         desiredAt: { gte: startOfDay, lte: endOfDay },
       },
-      select: { desiredAt: true },
+      select: { desiredAt: true, slotTime: true },
     });
 
     const bookedByTime: Record<string, number> = {};
     for (const t of booked) {
-      if (!t.desiredAt) continue;
-      const time = `${String(t.desiredAt.getHours()).padStart(2, '0')}:${String(t.desiredAt.getMinutes()).padStart(2, '0')}`;
+      const time = t.slotTime
+        || (t.desiredAt
+          ? `${String(t.desiredAt.getHours()).padStart(2, '0')}:${String(t.desiredAt.getMinutes()).padStart(2, '0')}`
+          : null);
+      if (!time) continue;
       bookedByTime[time] = (bookedByTime[time] || 0) + 1;
     }
 

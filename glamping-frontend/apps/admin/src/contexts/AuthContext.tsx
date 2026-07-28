@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     apiGet<User>('/api/auth/me')
       .then(user => {
         setUser(user)
-        subscribeToPush()
+        subscribeToPush().then(ok => console.log('[Push] subscription:', ok ? 'success' : 'failed'))
       })
       .catch(() => localStorage.removeItem('glamp-token'))
       .finally(() => setLoading(false))
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const res = await apiPost<{ accessToken: string; user: User }>('/api/auth/login', { login, password })
     localStorage.setItem('glamp-token', res.accessToken)
     setUser(res.user)
-    subscribeToPush()
+    subscribeToPush().then(ok => console.log('[Push] subscription:', ok ? 'success' : 'failed'))
   }, [])
 
   const logout = useCallback(() => {

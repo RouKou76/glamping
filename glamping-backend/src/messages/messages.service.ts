@@ -107,14 +107,12 @@ export class MessagesService {
     this.gateway.sendToHouse(houseId, 'server:message:new', result);
     this.gateway.broadcastToAdmins('server:message:new', result);
 
-    if (!this.gateway.hasConnectedAdmins()) {
-      const house = await this.prisma.house.findUnique({ where: { id: houseId } });
-      void this.push.sendNotification({
-        title: 'Новое сообщение',
-        body: `Домик №${house?.number ?? '?'}: ${text.slice(0, 50)}`,
-        url: '/admin/chats',
-      });
-    }
+    const house = await this.prisma.house.findUnique({ where: { id: houseId } });
+    void this.push.sendNotification({
+      title: 'Новое сообщение',
+      body: `Домик №${house?.number ?? '?'}: ${text.slice(0, 50)}`,
+      url: '/admin/chats',
+    });
 
     return result;
   }

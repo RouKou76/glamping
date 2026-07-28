@@ -196,6 +196,18 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
       }
     }
 
+    if (values.slot && !validationErrors.slot) {
+      const selectedDate = (values.date as string) || todayStr()
+      const [h, m] = (values.slot as string).split(':').map(Number)
+      const selected = new Date(selectedDate)
+      selected.setHours(h, m, 0, 0)
+      const minAllowed = new Date()
+      minAllowed.setMinutes(minAllowed.getMinutes() + GENERAL_MIN_ADVANCE_MINUTES)
+      if (selected < minAllowed) {
+        validationErrors.slot = `Выберите время не менее чем за ${GENERAL_MIN_ADVANCE_MINUTES} минут`
+      }
+    }
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
       return
@@ -231,6 +243,7 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
     if (values.slot) {
       const dateStr = (values.date as string) || todayStr()
       payload.desiredAt = new Date(`${dateStr}T${values.slot as string}:00`).toISOString()
+      payload.slotTime = values.slot as string
     }
     if (taskType === 'food' && values.time) payload.period = getPeriodFromTime(values.time as string)
     if (values.location) payload.location = values.location
@@ -243,6 +256,7 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
     if (values.guestCount) payload.guestCount = values.guestCount
     if (taskType === 'custom' && serviceName) {
       payload.description = values.comment ? `[${serviceName}] ${values.comment}` : serviceName
+      payload.serviceName = serviceName
     }
     if (allItems.length > 0) payload.items = allItems
 

@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Delete, Body } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, Post, Delete, Body, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { PushService } from './push.service';
 import { SubscribeDto } from './dto/subscribe.dto';
 import { Public } from '../common/decorators/public.decorator';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 
 @ApiTags('push')
 @Controller('push')
@@ -14,6 +15,14 @@ export class PushController {
   @ApiOperation({ summary: 'Get VAPID public key' })
   getVapidKey() {
     return { publicKey: this.pushService.getPublicKey() };
+  }
+
+  @Get('stats')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Push notification stats' })
+  getStats() {
+    return this.pushService.getStats();
   }
 
   @Post('subscribe')

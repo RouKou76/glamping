@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { GatewayService } from '../gateway/gateway.service';
 import { PushService } from '../push/push.service';
@@ -67,6 +67,8 @@ export class TicketsService {
       guestCount: t.guestCount,
       priceFix: t.priceFix,
       km: t.km,
+      slotTime: t.slotTime,
+      serviceName: t.serviceName,
     }));
   }
 
@@ -75,33 +77,69 @@ export class TicketsService {
   }
 
   async create(dto: CreateTicketDto) {
-    if (dto.type === 'custom' && dto.desiredAt && dto.description) {
-      const bracketMatch = dto.description.match(/^\[(.+?)\]/);
-      const serviceName = bracketMatch ? bracketMatch[1] : null;
-      if (serviceName) {
-        const service = await this.prisma.service.findFirst({ where: { name: serviceName } });
-        if (service) {
-          const fields = service.fields as Record<string, unknown>;
-          if (fields?.booking) {
-            const limit = (fields.bookingLimit as number) ?? 1;
-            const desiredDate = new Date(dto.desiredAt);
-            const slotTime = `${String(desiredDate.getHours()).padStart(2, '0')}:${String(desiredDate.getMinutes()).padStart(2, '0')}`;
-            const slotStart = new Date(desiredDate); slotStart.setSeconds(0, 0);
-            const slotEnd = new Date(slotStart); slotEnd.setMinutes(slotEnd.getMinutes() + 1);
-            const startOfDay = new Date(desiredDate); startOfDay.setHours(0, 0, 0, 0);
-            const endOfDay = new Date(desiredDate); endOfDay.setHours(23, 59, 59, 999);
-            const count = await this.prisma.ticket.count({
+    if (dto.desiredAt) {
+      const desired = new Date(dto.desiredAt);
+      if (desired < new Date()) {
+        throw new BadRequestException('Нельзя заказать на прошлое время');
+      }
+    }
+
+    const matchName = dto.serviceName || (() => {
+      if (!dto.description) return null;
+      const m = dto.description.match(/^\[(.+?)\]/);
+      return m ? m[1] : null;
+    })();
+
+    if (dto.type === 'custom' && dto.desiredAt && matchName) {
+      const service = await this.prisma.service.findFirst({ where: { name: matchName } });
+      if (service) {
+        const fields = service.fields as Record<string, unknown>;
+        if (fields?.booking) {
+          const limit = (fields.bookingLimit as number) ?? 1;
+          const desiredDate = new Date(dto.desiredAt);
+          const slotTime = dto.slotTime
+            || `${String(desiredDate.getHours()).padStart(2, '0')}:${String(desiredDate.getMinutes()).padStart(2, '0')}`;
+          const slotStart = new Date(desiredDate); slotStart.setSeconds(0, 0);
+          const slotEnd = new Date(slotStart); slotEnd.setMinutes(slotEnd.getMinutes() + 1);
+
+          const nameMatch = { OR: [
+            { serviceName: matchName },
+            { description: { startsWith: `[${matchName}]` } },
+          ] };
+
+          const ticket = await this.prisma.$transaction(async (tx) => {
+            const count = await tx.ticket.count({
               where: {
                 type: 'custom',
-                description: { startsWith: `[${serviceName}]` },
+                ...nameMatch,
                 status: { not: 'archived' },
                 desiredAt: { gte: slotStart, lt: slotEnd },
               },
             });
             if (count >= limit) {
-              throw new Error(`Слот ${slotTime} уже занят. Попробуйте другое время.`);
+              throw new BadRequestException(`Слот ${slotTime} уже занят. Попробуйте другое время.`);
             }
-          }
+            return tx.ticket.create({
+              data: {
+                houseId: dto.houseId,
+                type: dto.type as never,
+                description: dto.description,
+                geo: dto.geo,
+                assignedTo: dto.assignedTo as never,
+                location: dto.location,
+                guestCount: dto.guestCount,
+                items: dto.items as never,
+                priceFix: dto.priceFix,
+                km: dto.km,
+                desiredAt: new Date(dto.desiredAt!),
+                sessionId: dto.sessionId,
+                slotTime: dto.slotTime,
+                serviceName: matchName,
+              },
+            });
+          });
+
+          return this.broadcastAndNotify(ticket, dto);
         }
       }
     }
@@ -120,9 +158,15 @@ export class TicketsService {
         km: dto.km,
         desiredAt: dto.desiredAt ? new Date(dto.desiredAt) : undefined,
         sessionId: dto.sessionId,
+        slotTime: dto.slotTime,
+        serviceName: dto.serviceName,
       },
     });
 
+    return this.broadcastAndNotify(ticket, dto);
+  }
+
+  private broadcastAndNotify(ticket: any, dto: CreateTicketDto) {
     const result = {
       id: ticket.id,
       houseId: ticket.houseId,
@@ -138,15 +182,14 @@ export class TicketsService {
       guestCount: ticket.guestCount,
       priceFix: ticket.priceFix,
       km: ticket.km,
+      slotTime: ticket.slotTime,
+      serviceName: ticket.serviceName,
       updatedAt: ticket.updatedAt.toISOString(),
     };
 
     void this.gateway.broadcastToAdmins('server:ticket:created', result);
 
-    if (!this.gateway.hasConnectedAdmins()) {
-      const house = await this.prisma.house.findUnique({
-        where: { id: dto.houseId },
-      });
+    this.prisma.house.findUnique({ where: { id: dto.houseId } }).then((house) => {
       const typeLabel =
         dto.type === 'custom' && dto.description ? dto.description : (TYPE_LABELS[dto.type] ?? dto.type);
       void this.push.sendNotification({
@@ -154,7 +197,7 @@ export class TicketsService {
         body: `${typeLabel} — Домик №${house?.number ?? '?'}`,
         url: '/',
       });
-    }
+    });
 
     return result;
   }
@@ -194,7 +237,7 @@ export class TicketsService {
 
     void this.gateway.broadcastToAdmins('server:ticket:updated', result);
 
-    if (dto.status && !this.gateway.hasConnectedAdmins()) {
+    if (dto.status) {
       const statusLabels: Record<string, string> = {
         in_progress: 'В работе',
         done: 'Готово',

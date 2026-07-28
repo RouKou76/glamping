@@ -119,6 +119,8 @@ model Ticket {
   items       Json?
   priceFix    Int?          @map("price_fix")
   km          Float?
+  slotTime    String?  @map("slot_time")
+  serviceName String?  @map("service_name")
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
 

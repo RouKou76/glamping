@@ -98,6 +98,16 @@ export class CreateTicketDto {
   sessionId?: string;
 
   @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  slotTime?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  serviceName?: string;
+
+  @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
   km?: number;

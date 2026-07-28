@@ -11,7 +11,7 @@ async function main() {
 
   // Create roles
   const roles = [
-    { name: 'admin', permissions: ['manage_users', 'manage_houses', 'manage_services', 'manage_menu', 'view_tickets', 'manage_tickets', 'manage_chat', 'manage_settings', 'manage_roles'] },
+    { name: 'admin', permissions: ['manage_users', 'manage_houses', 'manage_services', 'manage_menu', 'manage_catalog', 'manage_info', 'view_tickets', 'manage_tickets', 'manage_chat', 'manage_settings', 'manage_roles'] },
     { name: 'cook', permissions: ['view_tickets:food', 'view_tickets:minibar'] },
     { name: 'cleaning', permissions: ['view_tickets:cleaning'] },
     { name: 'driver', permissions: ['view_tickets:transfer'] },
@@ -159,6 +159,21 @@ async function main() {
         { id: 'bike2', name: 'Городской велосипед', price: 400, hidden: false },
         { id: 'bike3', name: 'Детский велосипед', price: 300, hidden: false },
       ],
+    },
+    {
+      name: 'Катание на квадроциклах',
+      price: '2 500 ₽ / час',
+      icon: '🏍️',
+      active: true,
+      assignedTo: 'admin',
+      fields: {
+        booking: true,
+        bookingSlots: ['10:00', '12:00', '14:00', '16:00'],
+        bookingLimit: 2,
+        desiredAt: { enabled: true, label: 'Выберите время' },
+        guestCount: { enabled: true, label: 'Количество человек' },
+        comment: { enabled: true },
+      },
     },
   ];
 
