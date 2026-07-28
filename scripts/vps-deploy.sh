@@ -6,7 +6,7 @@
 set -euo pipefail
 
 VPS="root@109.196.99.62"
-REMOTE_DIR="/home/glamping/app"
+REMOTE_DIR="/opt/glamping"
 LOCAL_DIR="/home/gleb/HOTEL/app"
 
 echo "=== Деплой на $VPS ==="
