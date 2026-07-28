@@ -135,9 +135,9 @@ export default function Services() {
                   <p className="text-[10px] text-gray-400 dark:text-white/30 mb-2">Если не указано — используются слоты по умолчанию</p>
                   <div className="space-y-2">
                     {formBookingSchedule.map((entry, i) => (
-                      <div key={i} className="flex gap-2 items-center">
-                        <input type="text" value={formatDisplayDate(entry.date)} onChange={e => { const next = [...formBookingSchedule]; next[i] = { ...next[i], date: parseDisplayDate(e.target.value) }; setFormBookingSchedule(next) }} placeholder="дд/мм/гггг" inputMode="numeric" className="w-28 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" />
-                        <input type="text" value={entry.slots} onChange={e => { const next = [...formBookingSchedule]; next[i] = { ...next[i], slots: e.target.value }; setFormBookingSchedule(next) }} placeholder="10:00, 14:00" className="flex-1 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" />
+                      <div key={i} className="flex gap-2 items-center min-w-0">
+                        <input type="text" value={formatDisplayDate(entry.date)} onChange={e => { const next = [...formBookingSchedule]; next[i] = { ...next[i], date: parseDisplayDate(e.target.value) }; setFormBookingSchedule(next) }} placeholder="дд/мм/гггг" inputMode="numeric" className="w-24 shrink-0 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" />
+                        <input type="text" value={entry.slots} onChange={e => { const next = [...formBookingSchedule]; next[i] = { ...next[i], slots: e.target.value }; setFormBookingSchedule(next) }} placeholder="10:00, 14:00" className="flex-1 min-w-0 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" />
                         <button onClick={() => setFormBookingSchedule(prev => prev.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-600 shrink-0 p-1">✕</button>
                       </div>
                     ))}
