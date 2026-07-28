@@ -26,22 +26,26 @@ function CatalogSection({ catalogId, title }: CatalogSectionProps) {
     const file = fileRef.current?.files?.[0]
     if (!file) return
     setUploading(true)
+    let ok = false
     try {
       const formData = new FormData()
       formData.append('file', file)
       const token = localStorage.getItem('glamp-token')
-      await fetch(`/api/catalog/${catalogId}/upload`, {
+      const res = await fetch(`/api/catalog/${catalogId}/upload`, {
         method: 'POST',
         credentials: 'include',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
       })
+      ok = res.ok
+    } catch {
+      // ignore
+    }
+    if (ok) {
       refetch()
       setSuccess(true)
       setTimeout(() => setSuccess(false), 2500)
       if (fileRef.current) fileRef.current.value = ''
-    } catch {
-      // ignore
     }
     setUploading(false)
   }
