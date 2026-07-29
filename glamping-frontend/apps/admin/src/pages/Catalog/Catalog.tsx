@@ -171,7 +171,7 @@ import { useRef } from 'react'
 
 export default function Catalog() {
   return (
-    <div className="space-y-6">
+    <div className="p-4 space-y-6">
       <CatalogSection catalogId="andetta" title="Продукция бренда ANDETTA" />
       <hr className="border-gray-200 dark:border-white/10" />
       <CatalogSection catalogId="suveniry" title="Сувениры и вкусности из Иваново" />
