@@ -100,6 +100,12 @@ function getExtraInfo(ticket: Task): { icon: React.ReactNode; text: string }[] {
 const NEXT_STATUS: Record<string, TaskStatus> = { new: 'in_progress', in_progress: 'done' }
 const NEXT_LABEL: Record<string, string> = { new: 'В работу', in_progress: 'Готово' }
 
+const CHECKOUT_DESCRIPTION = 'Заявка на выезд'
+
+function isCheckoutTicket(ticket: Task): boolean {
+  return ticket.description === CHECKOUT_DESCRIPTION
+}
+
 const ClockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
 
 export default function Tickets() {
@@ -248,6 +254,9 @@ export default function Tickets() {
       return matchStatus && matchType && t.status !== 'cancelled' && t.status !== 'archived'
     })
     return result.sort((a, b) => {
+      const aCheckout = isCheckoutTicket(a) ? 0 : 1
+      const bCheckout = isCheckoutTicket(b) ? 0 : 1
+      if (aCheckout !== bCheckout) return aCheckout - bCheckout
       const urgA = getUrgency(a.desiredAt)
       const urgB = getUrgency(b.desiredAt)
       if (urgA.sort !== urgB.sort) return urgA.sort - urgB.sort
@@ -307,10 +316,12 @@ export default function Tickets() {
             const nextStatus = NEXT_STATUS[ticket.status]
             const nextLabel = NEXT_LABEL[ticket.status]
 
+            const isCheckout = isCheckoutTicket(ticket) && ticket.status !== 'archived'
+
             return (
               <div key={ticket.id}
                 onClick={() => setExpandedIds(prev => { const n = new Set(prev); isExpanded ? n.delete(ticket.id) : n.add(ticket.id); return n })}
-                className="bg-white dark:bg-[#1a1d27] rounded-xl shadow-sm border border-gray-100 dark:border-white/10 overflow-hidden transition-all cursor-pointer active:scale-[0.98]">
+                className={`bg-white dark:bg-[#1a1d27] rounded-xl shadow-sm border overflow-hidden transition-all cursor-pointer active:scale-[0.98] ${isCheckout ? 'border-red-300 dark:border-red-500/40 bg-red-50 dark:bg-red-500/10' : 'border-gray-100 dark:border-white/10'}`}>
 
                 {/* Шапка */}
                 <div className="px-4 pt-3 pb-1 flex items-center justify-between gap-2">

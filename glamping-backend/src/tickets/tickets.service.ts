@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { PrismaService } from '../common/prisma/prisma.service';
 import { GatewayService } from '../gateway/gateway.service';
 import { PushService } from '../push/push.service';
+import { HousesService } from '../houses/houses.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 
@@ -22,6 +23,7 @@ export class TicketsService {
     private prisma: PrismaService,
     private gateway: GatewayService,
     private push: PushService,
+    private housesService: HousesService,
   ) {}
 
   async findAll(query: {
@@ -237,6 +239,14 @@ export class TicketsService {
     };
 
     void this.gateway.broadcastToAdmins('server:ticket:updated', result);
+
+    if (dto.status === 'done' && ticket.status !== 'done' && ticket.description === 'Заявка на выезд') {
+      try {
+        await this.housesService.checkout(ticket.houseId);
+      } catch (e) {
+        // ignore — checkout may fail if already done
+      }
+    }
 
     if (dto.status) {
       const statusLabels: Record<string, string> = {
