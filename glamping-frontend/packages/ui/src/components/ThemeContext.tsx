@@ -17,7 +17,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const root = document.documentElement
-    root.classList.add('no-transition')
+    root.classList.add('fast-theme')
     if (theme === 'dark') {
       root.classList.add('dark')
     } else {
@@ -25,7 +25,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        root.classList.remove('no-transition')
+        root.classList.remove('fast-theme')
       })
     })
     localStorage.setItem('glamp-theme', theme)

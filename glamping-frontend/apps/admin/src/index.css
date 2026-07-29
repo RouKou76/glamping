@@ -2,10 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-.no-transition *,
-.no-transition *::before,
-.no-transition *::after {
-  transition: none !important;
+.fast-theme *,
+.fast-theme *::before,
+.fast-theme *::after {
+  transition-duration: 30ms !important;
 }
 
 body {
