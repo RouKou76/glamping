@@ -5,7 +5,7 @@
 .fast-theme *,
 .fast-theme *::before,
 .fast-theme *::after {
-  transition-duration: 30ms !important;
+  transition-duration: 100ms !important;
 }
 
 body {
@@ -15,7 +15,10 @@ body {
 }
 
 @supports (padding-top: env(safe-area-inset-top)) {
-  body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 .hide-scrollbar::-webkit-scrollbar {
