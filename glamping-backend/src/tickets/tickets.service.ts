@@ -13,6 +13,7 @@ const TYPE_LABELS: Record<string, string> = {
   towels: 'Полотенца',
   gates: 'Ворота',
   custom: 'Услуга',
+  quadbike: 'Квадроциклы',
 };
 
 @Injectable()

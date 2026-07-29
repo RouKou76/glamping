@@ -42,6 +42,7 @@ export class CreateTicketDto {
       'minibar',
       'gates',
       'custom',
+      'quadbike',
     ],
   })
   @IsEnum([
@@ -52,6 +53,7 @@ export class CreateTicketDto {
     'minibar',
     'gates',
     'custom',
+    'quadbike',
   ])
   type: string;
 
