@@ -196,7 +196,7 @@ export class TicketsService {
       void this.push.sendNotification({
         title: 'Новая заявка',
         body: `${typeLabel} — Домик №${house?.number ?? '?'}`,
-        url: '/',
+        url: '/admin/',
       });
     });
 
@@ -248,7 +248,7 @@ export class TicketsService {
       void this.push.sendNotification({
         title: 'Заявка обновлена',
         body: `${TYPE_LABELS[result.type] ?? result.type} — Домик №${house?.number ?? '?'} → ${label}`,
-        url: '/',
+        url: '/admin/',
       });
     }
 
