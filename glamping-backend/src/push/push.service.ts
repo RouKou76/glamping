@@ -83,6 +83,7 @@ export class PushService {
             { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, p256da: sub.p256da } },
             message,
           ).catch((err: any) => {
+            this.logger.warn(`Push fail: ${sub.endpoint.substring(0, 50)}... ${err.statusCode || '?'} ${err.message || err}`);
             if (err.statusCode === 404 || err.statusCode === 410) {
               staleEndpoints.push(sub.endpoint);
             }
