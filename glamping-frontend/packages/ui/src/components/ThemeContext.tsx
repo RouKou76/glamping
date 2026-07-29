@@ -17,11 +17,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const root = document.documentElement
+    root.classList.add('no-transition')
     if (theme === 'dark') {
       root.classList.add('dark')
     } else {
       root.classList.remove('dark')
     }
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        root.classList.remove('no-transition')
+      })
+    })
     localStorage.setItem('glamp-theme', theme)
   }, [theme])
 
