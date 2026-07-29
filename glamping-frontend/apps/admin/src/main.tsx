@@ -27,7 +27,8 @@ async function setupPush(reg: ServiceWorkerRegistration) {
 
     const res = await fetch('/api/push/vapid-key')
     if (!res.ok) return
-    const { publicKey } = await res.json()
+    const json = await res.json()
+    const publicKey = json?.data?.publicKey ?? json?.publicKey
     if (!publicKey) return
 
     const permission = await Notification.requestPermission()
