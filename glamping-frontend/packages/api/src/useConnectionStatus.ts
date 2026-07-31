@@ -14,7 +14,7 @@ export function useConnectionStatus(options: ConnectionStatusOptions = {}) {
   const checkConnection = useCallback(async () => {
     try {
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, { method: "HEAD", signal: AbortSignal.timeout(5000) });
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, { method: "HEAD", signal: AbortSignal.timeout(15000) });
       setIsConnected(response.ok);
     } catch { setIsConnected(false); }
     setLastChecked(new Date());

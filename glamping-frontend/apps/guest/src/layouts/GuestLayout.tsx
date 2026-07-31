@@ -10,7 +10,7 @@ export default function GuestLayout() {
   const { t } = useTranslation()
   const { info } = useGlampInfo()
   const { houseId, isInitialized } = useDevice()
-  const { isConnected } = useConnectionStatus({ checkInterval: 15000, wsConnected: houseId ? undefined : true })
+  const { isConnected } = useConnectionStatus({ checkInterval: 30000, wsConnected: houseId ? undefined : true })
   const [browserOnline, setBrowserOnline] = useState(navigator.onLine)
 
   useEffect(() => {
