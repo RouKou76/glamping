@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { computePeriodInfo } from '../../hooks/useMealPeriod'
+import { computePeriodInfo, periodFromTime } from '../../hooks/useMealPeriod'
 
 describe('OrderForm validation logic', () => {
   it('validates required fields', () => {
@@ -80,5 +80,43 @@ describe('computePeriodInfo', () => {
   it('none at 12:00', () => {
     const r = computePeriodInfo(makeDate(12, 0))
     expect(r.currentPeriod).toBe('none')
+  })
+})
+
+describe('periodFromTime', () => {
+  it('breakfast at 09:00', () => {
+    expect(periodFromTime('09:00')).toBe('breakfast')
+  })
+
+  it('breakfast buffer at 10:30', () => {
+    expect(periodFromTime('10:30')).toBe('breakfast')
+  })
+
+  it('lunch at 14:00', () => {
+    expect(periodFromTime('14:00')).toBe('lunch')
+  })
+
+  it('lunch buffer at 15:30', () => {
+    expect(periodFromTime('15:30')).toBe('lunch')
+  })
+
+  it('dinner at 20:00', () => {
+    expect(periodFromTime('20:00')).toBe('dinner')
+  })
+
+  it('none at 16:50', () => {
+    expect(periodFromTime('16:50')).toBe('none')
+  })
+
+  it('none at 11:00 (buffer end exclusive)', () => {
+    expect(periodFromTime('11:00')).toBe('none')
+  })
+
+  it('none at 12:00', () => {
+    expect(periodFromTime('12:00')).toBe('none')
+  })
+
+  it('none at 22:00', () => {
+    expect(periodFromTime('22:00')).toBe('none')
   })
 })

@@ -144,7 +144,8 @@
     "selectOption": "Please select {{field}}",
     "selectDish": "Please select at least one item",
     "offline": "No network connection",
-    "minAdvanceTime": "Food orders must be placed at least 1 hour in advance"
+    "minAdvanceTime": "Food orders must be placed at least 1 hour in advance",
+    "invalidTime": "Please select a time from the available periods"
   },
   "catalog": {
     "title": "Catalog",

@@ -13,6 +13,16 @@ export const SLOTS: TimeSlot[] = [
   { period: 'dinner', slotStart: 19, slotEnd: 21, bufferEnd: 22 },
 ]
 
+export function periodFromTime(time: string): MealPeriod {
+  const hour = parseInt(time.split(':')[0])
+  for (const slot of SLOTS) {
+    if (hour >= slot.slotStart && hour < slot.bufferEnd) {
+      return slot.period
+    }
+  }
+  return 'none'
+}
+
 function getMinutesFromMidnight(date: Date): number {
   return date.getHours() * 60 + date.getMinutes()
 }

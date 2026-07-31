@@ -4,7 +4,7 @@ import { Modal } from '@glamping/ui'
 import { useApi, apiPost } from '@glamping/api'
 import type { MenuItem, TaskItem } from '@glamping/types'
 import { CityAutocomplete } from '../../components/CityAutocomplete'
-import { SLOTS } from '../../hooks/useMealPeriod'
+import { SLOTS, periodFromTime } from '../../hooks/useMealPeriod'
 import { SuccessScreen } from './SuccessScreen'
 
 export interface OrderStepDate { type: 'date'; key: string; label: string; required?: boolean }
@@ -55,13 +55,6 @@ function getMinTime(dateStr: string): string {
     return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
   }
   return '00:00'
-}
-
-function getPeriodFromTime(time: string): string {
-  const hour = parseInt(time.split(':')[0])
-  if (hour >= 5 && hour < 12) return 'breakfast'
-  if (hour >= 12 && hour < 17) return 'lunch'
-  return 'dinner'
 }
 
 export function OrderForm({ open, title, steps, houseId, guestCount, transfers, taskType, serviceName, hint, onClose, onSubmit }: OrderFormProps) {
@@ -123,10 +116,14 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
   }, [slotStep?.serviceId, values.date])
 
   function setVal(key: string, value: unknown) {
-    if (taskType === 'food' && key === 'time' && values.time) {
-      const oldPeriod = getPeriodFromTime(values.time as string)
-      const newPeriod = getPeriodFromTime(value as string)
-      if (oldPeriod !== newPeriod) setCart({})
+    if (taskType === 'food' && key === 'time') {
+      const newPeriod = periodFromTime(value as string)
+      if (values.time && periodFromTime(values.time as string) !== newPeriod) setCart({})
+      if (newPeriod === 'none') {
+        setErrors(prev => ({ ...prev, [key]: t('validation.invalidTime') }))
+      } else {
+        setErrors(prev => { const n = { ...prev }; delete n[key]; return n })
+      }
     }
     setValues(prev => ({ ...prev, [key]: value }))
     if (errors[key]) setErrors(prev => { const n = { ...prev }; delete n[key]; return n })
@@ -186,13 +183,8 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
     }
 
     if (taskType === 'food' && values.time && !validationErrors.time) {
-      const hour = parseInt((values.time as string).split(':')[0])
-      const inSlot = SLOTS.some(s =>
-        (hour >= s.slotStart && hour < s.slotEnd) ||
-        (hour >= s.slotEnd && hour < s.bufferEnd)
-      )
-      if (!inSlot) {
-        validationErrors.time = 'Выберите время из предложенных периодов'
+      if (periodFromTime(values.time as string) === 'none') {
+        validationErrors.time = t('validation.invalidTime')
       }
     }
 
@@ -245,7 +237,7 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
       payload.desiredAt = new Date(`${dateStr}T${values.slot as string}:00`).toISOString()
       payload.slotTime = values.slot as string
     }
-    if (taskType === 'food' && values.time) payload.period = getPeriodFromTime(values.time as string)
+    if (taskType === 'food' && values.time) payload.period = periodFromTime(values.time as string)
     if (values.location) payload.location = values.location
     if (values.city) {
       payload.location = values.city
@@ -429,9 +421,9 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
 
             if (s.type === 'menu') {
               const selectedTime = values.time as string | undefined
-              const period = selectedTime ? getPeriodFromTime(selectedTime) : null
+              const period = selectedTime ? periodFromTime(selectedTime) : null
 
-              if (taskType === 'food' && !selectedTime) {
+              if (taskType === 'food' && (!selectedTime || period === 'none')) {
                 return (
                   <div key={s.key}>
                     <label className="text-xs font-bold text-gray-600 dark:text-white/50 uppercase tracking-wider mb-2 block">

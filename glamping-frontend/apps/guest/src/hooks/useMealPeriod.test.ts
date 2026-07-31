@@ -27,8 +27,8 @@ describe('computePeriodInfo', () => {
     expect(r.bufferEndsAt).not.toBeNull()
   })
 
-  test('11:59 → breakfast, IN buffer', () => {
-    const r = computePeriodInfo(makeDate(11, 59))
+  test('10:59 → breakfast, IN buffer', () => {
+    const r = computePeriodInfo(makeDate(10, 59))
     expect(r.currentPeriod).toBe('breakfast')
     expect(r.isInBuffer).toBe(true)
   })
