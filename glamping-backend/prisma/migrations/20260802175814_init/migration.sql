@@ -2,7 +2,7 @@
 CREATE TYPE "HouseStatus" AS ENUM ('occupied', 'vacant');
 
 -- CreateEnum
-CREATE TYPE "TicketType" AS ENUM ('food', 'transfer', 'cleaning', 'towels', 'minibar', 'gates', 'custom');
+CREATE TYPE "TicketType" AS ENUM ('food', 'transfer', 'cleaning', 'towels', 'minibar', 'gates', 'custom', 'quadbike');
 
 -- CreateEnum
 CREATE TYPE "TicketStatus" AS ENUM ('new', 'accepted', 'in_progress', 'done', 'archived');
@@ -11,7 +11,10 @@ CREATE TYPE "TicketStatus" AS ENUM ('new', 'accepted', 'in_progress', 'done', 'a
 CREATE TYPE "MenuCategory" AS ENUM ('breakfast', 'lunch', 'dinner', 'minibar');
 
 -- CreateEnum
-CREATE TYPE "AssignedRole" AS ENUM ('cook', 'cleaning', 'driver', 'admin');
+CREATE TYPE "MenuSubcategory" AS ENUM ('appetizers', 'first', 'hot', 'sides', 'desserts', 'drinks', 'main');
+
+-- CreateEnum
+CREATE TYPE "AssignedRole" AS ENUM ('cook', 'cleaning', 'driver', 'admin', 'quadbike');
 
 -- CreateTable
 CREATE TABLE "houses" (
@@ -34,6 +37,7 @@ CREATE TABLE "guest_sessions" (
     "check_in_at" TIMESTAMP(3),
     "check_out_at" TIMESTAMP(3),
     "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "checkout_requested" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "guest_sessions_pkey" PRIMARY KEY ("id")
@@ -52,7 +56,7 @@ CREATE TABLE "roles" (
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
+    "login" TEXT NOT NULL,
     "password_hash" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "role_id" TEXT NOT NULL,
@@ -79,7 +83,9 @@ CREATE TABLE "tickets" (
     "guest_count" INTEGER,
     "items" JSONB,
     "price_fix" INTEGER,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "km" DOUBLE PRECISION,
+    "slot_time" TEXT,
+    "service_name" TEXT,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "tickets_pkey" PRIMARY KEY ("id")
@@ -91,10 +97,10 @@ CREATE TABLE "menu_items" (
     "name" TEXT NOT NULL,
     "description" TEXT,
     "category" "MenuCategory" NOT NULL,
+    "subcategory" "MenuSubcategory",
     "price" INTEGER NOT NULL,
     "hidden" BOOLEAN NOT NULL DEFAULT false,
     "show_price" BOOLEAN NOT NULL DEFAULT true,
-    "translations" JSONB,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -112,7 +118,6 @@ CREATE TABLE "services" (
     "fields" JSONB NOT NULL,
     "items" JSONB,
     "json_schema" JSONB,
-    "translations" JSONB,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -139,7 +144,6 @@ CREATE TABLE "chat_messages" (
     "text" TEXT NOT NULL,
     "timestamp" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "read" BOOLEAN NOT NULL DEFAULT false,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "chat_messages_pkey" PRIMARY KEY ("id")
 );
@@ -151,6 +155,17 @@ CREATE TABLE "settings" (
     "value" TEXT NOT NULL,
 
     CONSTRAINT "settings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "push_subscriptions" (
+    "id" TEXT NOT NULL,
+    "endpoint" TEXT NOT NULL,
+    "p256dh" TEXT NOT NULL,
+    "p256da" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "push_subscriptions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -166,7 +181,7 @@ CREATE INDEX "guest_sessions_house_id_is_active_idx" ON "guest_sessions"("house_
 CREATE UNIQUE INDEX "roles_name_key" ON "roles"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+CREATE UNIQUE INDEX "users_login_key" ON "users"("login");
 
 -- CreateIndex
 CREATE INDEX "tickets_house_id_idx" ON "tickets"("house_id");
@@ -182,6 +197,9 @@ CREATE INDEX "chat_messages_house_id_idx" ON "chat_messages"("house_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "settings_key_key" ON "settings"("key");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "push_subscriptions_endpoint_key" ON "push_subscriptions"("endpoint");
 
 -- AddForeignKey
 ALTER TABLE "guest_sessions" ADD CONSTRAINT "guest_sessions_house_id_fkey" FOREIGN KEY ("house_id") REFERENCES "houses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

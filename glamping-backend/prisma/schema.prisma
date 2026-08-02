@@ -37,6 +37,16 @@ enum MenuCategory {
   minibar
 }
 
+enum MenuSubcategory {
+  appetizers
+  first
+  hot
+  sides
+  desserts
+  drinks
+  main
+}
+
 enum AssignedRole {
   cook
   cleaning
@@ -121,9 +131,8 @@ model Ticket {
   items       Json?
   priceFix    Int?          @map("price_fix")
   km          Float?
-  slotTime    String?  @map("slot_time")
-  serviceName String?  @map("service_name")
-  createdAt   DateTime      @default(now()) @map("created_at")
+  slotTime    String?       @map("slot_time")
+  serviceName String?       @map("service_name")
   updatedAt   DateTime      @updatedAt @map("updated_at")
 
   house   House         @relation(fields: [houseId], references: [id])
@@ -136,34 +145,32 @@ model Ticket {
 }
 
 model MenuItem {
-  id           String       @id @default(cuid())
-  name         String
-  description  String?
-  category     MenuCategory
-  subcat       String?      @map("subcategory")
-  price        Int
-  hidden       Boolean      @default(false)
-  showPrice    Boolean      @default(true) @map("show_price")
-  translations Json?
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
+  id          String           @id @default(cuid())
+  name        String
+  description String?
+  category    MenuCategory
+  subcat      MenuSubcategory? @map("subcategory")
+  price       Int
+  hidden      Boolean          @default(false)
+  showPrice   Boolean          @default(true) @map("show_price")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
 
   @@map("menu_items")
 }
 
 model Service {
-  id           String       @id @default(cuid())
-  name         String
-  price        String?
-  icon         String?
-  active       Boolean      @default(true)
-  assignedTo   AssignedRole @map("assigned_to")
-  fields       Json
-  items        Json?
-  jsonSchema   Json?        @map("json_schema")
-  translations Json?
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
+  id         String       @id @default(cuid())
+  name       String
+  price      String?
+  icon       String?
+  active     Boolean      @default(true)
+  assignedTo AssignedRole @map("assigned_to")
+  fields     Json
+  items      Json?
+  jsonSchema Json?        @map("json_schema")
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
 
   @@map("services")
 }
@@ -186,7 +193,6 @@ model ChatMessage {
   text      String
   timestamp DateTime @default(now())
   read      Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at")
 
   house   House         @relation(fields: [houseId], references: [id])
   session GuestSession? @relation(fields: [sessionId], references: [id])

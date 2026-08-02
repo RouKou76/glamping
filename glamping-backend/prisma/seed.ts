@@ -107,14 +107,14 @@ async function main() {
         data: {
           name: item.name,
           category: item.category as any,
-          subcat: item.subcat,
+          subcat: item.subcat as any,
           price: item.price,
         },
       });
     } else if (item.subcat && !existing.subcat) {
       await prisma.menuItem.update({
         where: { id: existing.id },
-        data: { subcat: item.subcat },
+        data: { subcat: item.subcat as any },
       });
     }
   }
