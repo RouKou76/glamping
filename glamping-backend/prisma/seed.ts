@@ -11,11 +11,7 @@ async function main() {
 
   // Create roles
   const roles = [
-    { name: 'admin', permissions: ['manage_users', 'manage_houses', 'manage_services', 'manage_menu', 'manage_catalog', 'manage_info', 'view_tickets', 'manage_tickets', 'manage_chat', 'manage_settings', 'manage_roles'] },
-    { name: 'cook', permissions: ['view_tickets:food', 'view_tickets:minibar'] },
-    { name: 'cleaning', permissions: ['view_tickets:cleaning'] },
-    { name: 'driver', permissions: ['view_tickets:transfer'] },
-    { name: 'quadbike', permissions: ['view_tickets:quadbike'] },
+    { name: 'admin', permissions: ['manage_users', 'manage_houses', 'manage_services', 'manage_menu', 'manage_catalog', 'manage_info', 'manage_chat', 'manage_roles', 'manage_settings', 'manage_tickets', 'view_tickets'] },
   ];
 
   const roleMap: Record<string, string> = {};
@@ -28,14 +24,10 @@ async function main() {
     roleMap[role.name] = r.id;
   }
 
-  // Create users for each role
+  // Create users
   const passwordHash = await argon2.hash('admin123');
   const users = [
     { login: 'admin', name: 'Admin', roleName: 'admin' },
-    { login: 'cook', name: 'Повар', roleName: 'cook' },
-    { login: 'cleaning', name: 'Клининг', roleName: 'cleaning' },
-    { login: 'driver', name: 'Водитель', roleName: 'driver' },
-    { login: 'quadbike', name: 'Квадроциклы', roleName: 'quadbike' },
   ];
 
   for (const user of users) {
@@ -74,7 +66,7 @@ async function main() {
     { name: 'Горячий шоколад', category: 'breakfast', subcat: 'drinks', price: 123 },
     // Обед — Закуски
     { name: 'Салат из свежих овощей с сыром фета', category: 'lunch', subcat: 'appetizers', price: 123 },
-    { name: 'Венигрет', category: 'lunch', subcat: 'appetizers', price: 123 },
+    { name: 'Винегрет', category: 'lunch', subcat: 'appetizers', price: 123 },
     // Обед — Первое
     { name: 'Уха по-финский с лососем', category: 'lunch', subcat: 'first', price: 123 },
     { name: 'Суп вермишелевый', category: 'lunch', subcat: 'first', price: 123 },
@@ -130,37 +122,8 @@ async function main() {
   // Create services
   const services = [
     {
-      name: 'Русская баня',
-      price: '3 000 ₽ / час',
-      icon: '🛁',
-      active: false,
-      assignedTo: 'admin',
-      fields: {
-        desiredAt: { enabled: true, label: 'Удобное время' },
-        guestCount: { enabled: true, label: 'Количество человек' },
-        comment: { enabled: true },
-      },
-    },
-    {
-      name: 'Прокат велосипедов',
-      price: '500 ₽ / час',
-      icon: '🚲',
-      active: false,
-      assignedTo: 'admin',
-      fields: {
-        desiredAt: { enabled: true, label: 'Время начала' },
-        guestCount: { enabled: true, label: 'Количество велосипедов' },
-        catalog: { enabled: true, label: 'Выберите тип' },
-      },
-      items: [
-        { id: 'bike1', name: 'Горный велосипед', price: 500, hidden: false },
-        { id: 'bike2', name: 'Городской велосипед', price: 400, hidden: false },
-        { id: 'bike3', name: 'Детский велосипед', price: 300, hidden: false },
-      ],
-    },
-    {
       name: 'Катание на квадроциклах',
-      price: '2 500 ₽ / час',
+      price: '4 000 – 6 000 ₽ / час',
       icon: '🏍️',
       active: true,
       assignedTo: 'admin',
@@ -171,6 +134,8 @@ async function main() {
         desiredAt: { enabled: true, label: 'Выберите время' },
         guestCount: { enabled: true, label: 'Количество человек' },
         comment: { enabled: true },
+        showDescription: true,
+        description: 'Прокат одного Квадроцикла 6000 руб./час, от двух квадроциклов 4000 руб. /час. Экипировка инструктаж, фото/видеосьемка входят в стоимость.',
       },
     },
   ];
@@ -195,7 +160,7 @@ async function main() {
 
   // Create settings
   const settings = [
-    { key: 'title', value: 'Глэмпинг "Пример названия"' },
+    { key: 'title', value: 'Глэмпинг "Бренандетта"' },
     { key: 'phone', value: '+7 (999) 123-45-67' },
     { key: 'wifi_name', value: 'Glamp_Guest' },
     { key: 'wifi_password', value: 'forest2026' },
