@@ -13,7 +13,7 @@
     "transfer": "接送服务",
     "cleaning": "清洁服务",
     "towels": "更换毛巾",
-    "quadbike": "四轮摩托骑行",
+    "kupe": "热水浴池",
     "gates": "开门",
     "andetta": "ANDETTA 产品",
     "suveniry": "伊万诺沃纪念品和美食",
@@ -91,16 +91,16 @@
     "required": "请选择日期和时间",
     "futureOnly": "请选择未来的时间"
   },
-  "quadbike": {
-    "title": "四轮摩托骑行",
-    "description": "选择方便的时间进行四轮摩托骑行。",
+  "kupe": {
+    "title": "热水浴池",
+    "description": "请选择适合热水浴池的时间。",
     "datetime": "日期和时间",
     "next": "下一步",
     "back": "← 返回",
     "submit": "确认",
-    "readyHint": "请在预定时间准备好出发。",
+    "readyHint": "请在指定时间做好准备。",
     "success": "请求已接受！",
-    "successMsg": "四轮摩托骑行已安排。",
+    "successMsg": "热水浴池已预订。",
     "required": "请选择日期和时间",
     "futureOnly": "请选择未来的时间"
   },

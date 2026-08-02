@@ -19,7 +19,7 @@ enum TicketType {
   minibar
   gates
   custom
-  quadbike
+  kupe
 }
 
 enum TicketStatus {
@@ -52,7 +52,7 @@ enum AssignedRole {
   cleaning
   driver
   admin
-  quadbike
+  kupe
 }
 
 model House {

@@ -2,7 +2,7 @@
 CREATE TYPE "HouseStatus" AS ENUM ('occupied', 'vacant');
 
 -- CreateEnum
-CREATE TYPE "TicketType" AS ENUM ('food', 'transfer', 'cleaning', 'towels', 'minibar', 'gates', 'custom', 'quadbike');
+CREATE TYPE "TicketType" AS ENUM ('food', 'transfer', 'cleaning', 'towels', 'minibar', 'gates', 'custom', 'kupe');
 
 -- CreateEnum
 CREATE TYPE "TicketStatus" AS ENUM ('new', 'accepted', 'in_progress', 'done', 'archived');
@@ -14,7 +14,7 @@ CREATE TYPE "MenuCategory" AS ENUM ('breakfast', 'lunch', 'dinner', 'minibar');
 CREATE TYPE "MenuSubcategory" AS ENUM ('appetizers', 'first', 'hot', 'sides', 'desserts', 'drinks', 'main');
 
 -- CreateEnum
-CREATE TYPE "AssignedRole" AS ENUM ('cook', 'cleaning', 'driver', 'admin', 'quadbike');
+CREATE TYPE "AssignedRole" AS ENUM ('cook', 'cleaning', 'driver', 'admin', 'kupe');
 
 -- CreateTable
 CREATE TABLE "houses" (

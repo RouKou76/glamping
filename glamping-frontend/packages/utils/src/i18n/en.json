@@ -13,7 +13,7 @@
     "transfer": "Transfer",
     "cleaning": "Cleaning",
     "towels": "Towel Replacement",
-    "quadbike": "Quad Bike Ride",
+    "kupe": "Hot Tub",
     "gates": "Open Gates",
     "andetta": "ANDETTA Products",
     "suveniry": "Souvenirs & Treats from Ivanovo",
@@ -91,16 +91,16 @@
     "required": "Please select date and time",
     "futureOnly": "Please select a future time"
   },
-  "quadbike": {
-    "title": "Quad Bike Ride",
-    "description": "Choose a convenient time for a quad bike ride.",
+  "kupe": {
+    "title": "Hot Tub",
+    "description": "Choose a convenient time for the hot tub.",
     "datetime": "Date and Time",
     "next": "Next",
     "back": "← Back",
     "submit": "Confirm",
-    "readyHint": "Please be ready to start at the scheduled time.",
+    "readyHint": "Please be ready for the session at the scheduled time.",
     "success": "Request accepted!",
-    "successMsg": "Quad bike ride has been scheduled.",
+    "successMsg": "Hot tub session has been scheduled.",
     "required": "Please select date and time",
     "futureOnly": "Please select a future time"
   },
