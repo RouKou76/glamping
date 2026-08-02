@@ -45,6 +45,7 @@
     "required": "Please select a time",
     "selectTimeFirst": "Please select delivery time first",
     "appetizers": "Appetizers/Salads",
+    "first": "Soups",
     "hot": "Hot Dishes",
     "sides": "Sides",
     "desserts": "Desserts",

@@ -443,7 +443,7 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
               const useSubcats = taskType === 'food' && period && (period === 'breakfast' || period === 'lunch' || period === 'dinner')
 
               if (useSubcats) {
-                const subcatOrder = period === 'breakfast' ? ['drinks', 'main'] : ['drinks', 'appetizers', 'hot', 'sides', 'desserts']
+                const subcatOrder = period === 'breakfast' ? ['drinks', 'main'] : ['drinks', 'appetizers', 'first', 'hot', 'sides', 'desserts']
                 const grouped = subcatOrder
                   .map(sc => ({
                     subcat: sc,

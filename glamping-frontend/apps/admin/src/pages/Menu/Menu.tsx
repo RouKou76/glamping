@@ -6,9 +6,9 @@ import { ConfirmDialog } from '@glamping/ui'
 type CategoryFilter = MenuCategory | 'all'
 const CATEGORY_LABELS: Record<MenuCategory, string> = { breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин', minibar: 'Минибар' }
 const VISIBLE_CATEGORIES: MenuCategory[] = ['breakfast', 'lunch', 'dinner']
-const SUBCAT_LABELS: Record<string, string> = { main: 'Основные блюда', drinks: 'Напитки', appetizers: 'Закуски/Салаты', hot: 'Горячее', sides: 'Гарниры', desserts: 'Десерты' }
+const SUBCAT_LABELS: Record<string, string> = { main: 'Основные блюда', drinks: 'Напитки', appetizers: 'Закуски/Салаты', first: 'Первое', hot: 'Горячее', sides: 'Гарниры', desserts: 'Десерты' }
 const BREAKFAST_ORDER = ['drinks', 'main']
-const MEAL_ORDER = ['drinks', 'appetizers', 'hot', 'sides', 'desserts']
+const MEAL_ORDER = ['drinks', 'appetizers', 'first', 'hot', 'sides', 'desserts']
 
 function ItemRow({ item, onToggle, onEdit, onDelete }: { item: MenuItem; onToggle: () => void; onEdit: () => void; onDelete: () => void }) {
   return (

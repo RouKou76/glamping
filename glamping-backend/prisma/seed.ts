@@ -63,53 +63,49 @@ async function main() {
   // Create menu items
   const menuItems = [
     // Завтрак — Основные блюда
-    { name: 'Сырники из фермерского творога', category: 'breakfast', subcat: 'main', price: 450 },
-    { name: 'Овсяная каша с ягодами', category: 'breakfast', subcat: 'main', price: 320 },
-    { name: 'Яичница с беконом', category: 'breakfast', subcat: 'main', price: 380 },
+    { name: 'Оладьи со сметаной и джемом', category: 'breakfast', subcat: 'main', price: 123 },
+    { name: 'Омлет с сыром и помидорами', category: 'breakfast', subcat: 'main', price: 123 },
+    { name: 'Каша геркулесовая с маслом', category: 'breakfast', subcat: 'main', price: 123 },
+    { name: 'Комплект сосисок микс', category: 'breakfast', subcat: 'main', price: 123 },
     // Завтрак — Напитки
-    { name: 'Кофе', category: 'breakfast', subcat: 'drinks', price: 200 },
-    { name: 'Чай зеленый', category: 'breakfast', subcat: 'drinks', price: 150 },
-    { name: 'Чай черный', category: 'breakfast', subcat: 'drinks', price: 150 },
-    { name: 'Горячий шоколад', category: 'breakfast', subcat: 'drinks', price: 250 },
-    // Обед — Закуски/Салаты
-    { name: 'Греческий салат', category: 'lunch', subcat: 'appetizers', price: 380 },
-    { name: 'Цезарь с курицей', category: 'lunch', subcat: 'appetizers', price: 420 },
+    { name: 'Чай черный', category: 'breakfast', subcat: 'drinks', price: 123 },
+    { name: 'Чай зеленый', category: 'breakfast', subcat: 'drinks', price: 123 },
+    { name: 'Кофе', category: 'breakfast', subcat: 'drinks', price: 123 },
+    { name: 'Горячий шоколад', category: 'breakfast', subcat: 'drinks', price: 123 },
+    // Обед — Закуски
+    { name: 'Салат из свежих овощей с сыром фета', category: 'lunch', subcat: 'appetizers', price: 123 },
+    { name: 'Венигрет', category: 'lunch', subcat: 'appetizers', price: 123 },
+    // Обед — Первое
+    { name: 'Уха по-финский с лососем', category: 'lunch', subcat: 'first', price: 123 },
+    { name: 'Суп вермишелевый', category: 'lunch', subcat: 'first', price: 123 },
     // Обед — Горячее
-    { name: 'Борщ со сметаной', category: 'lunch', subcat: 'hot', price: 420 },
-    { name: 'Паста карбонара', category: 'lunch', subcat: 'hot', price: 550 },
-    // Обед — Гарниры
-    { name: 'Рис', category: 'lunch', subcat: 'sides', price: 120 },
-    { name: 'Картофельное пюре', category: 'lunch', subcat: 'sides', price: 150 },
-    // Обед — Десерты
-    { name: 'Чизкейк', category: 'lunch', subcat: 'desserts', price: 350 },
-    { name: 'Тирамису', category: 'lunch', subcat: 'desserts', price: 380 },
+    { name: 'Бифстроганов из индейки', category: 'lunch', subcat: 'hot', price: 123 },
+    { name: 'Шницель венский', category: 'lunch', subcat: 'hot', price: 123 },
+    // Обед — Гарнир
+    { name: 'Рис', category: 'lunch', subcat: 'sides', price: 123 },
+    { name: 'Пюре картофельное', category: 'lunch', subcat: 'sides', price: 123 },
     // Обед — Напитки
-    { name: 'Чай зеленый', category: 'lunch', subcat: 'drinks', price: 150 },
-    { name: 'Чай черный', category: 'lunch', subcat: 'drinks', price: 150 },
-    { name: 'Фруктовый компот', category: 'lunch', subcat: 'drinks', price: 180 },
-    { name: 'Горячий шоколад', category: 'lunch', subcat: 'drinks', price: 250 },
+    { name: 'Чай черный', category: 'lunch', subcat: 'drinks', price: 123 },
+    { name: 'Чай зеленый', category: 'lunch', subcat: 'drinks', price: 123 },
+    { name: 'Компот ягодный микс', category: 'lunch', subcat: 'drinks', price: 123 },
+    { name: 'Горячий шоколад', category: 'lunch', subcat: 'drinks', price: 123 },
     // Ужин — Закуски
-    { name: 'Тартар из лосося', category: 'dinner', subcat: 'appetizers', price: 520 },
-    { name: 'Капрезе', category: 'dinner', subcat: 'appetizers', price: 380 },
+    { name: 'Салат овощной с зеленью', category: 'dinner', subcat: 'appetizers', price: 123 },
+    { name: 'Цезарь с креветками', category: 'dinner', subcat: 'appetizers', price: 123 },
     // Ужин — Горячее
-    { name: 'Стейк из форели', category: 'dinner', subcat: 'hot', price: 890 },
-    { name: 'Утиная грудка с овощами', category: 'dinner', subcat: 'hot', price: 950 },
-    // Ужин — Гарниры
-    { name: 'Рис', category: 'dinner', subcat: 'sides', price: 120 },
-    { name: 'Картофельное пюре', category: 'dinner', subcat: 'sides', price: 150 },
-    // Ужин — Десерты
-    { name: 'Чизкейк', category: 'dinner', subcat: 'desserts', price: 350 },
-    { name: 'Тирамису', category: 'dinner', subcat: 'desserts', price: 380 },
+    { name: 'Крылышки запеченые', category: 'dinner', subcat: 'hot', price: 123 },
+    { name: 'Люля-кебаб мясо микс', category: 'dinner', subcat: 'hot', price: 123 },
+    // Ужин — Гарнир
+    { name: 'Рис', category: 'dinner', subcat: 'sides', price: 123 },
+    { name: 'Картофель по-деревенски', category: 'dinner', subcat: 'sides', price: 123 },
+    // Ужин — Десерт
+    { name: 'Торт птичье молоко', category: 'dinner', subcat: 'desserts', price: 123 },
+    { name: 'Десерт тирамису', category: 'dinner', subcat: 'desserts', price: 123 },
     // Ужин — Напитки
-    { name: 'Чай зеленый', category: 'dinner', subcat: 'drinks', price: 150 },
-    { name: 'Чай черный', category: 'dinner', subcat: 'drinks', price: 150 },
-    { name: 'Фруктовый компот', category: 'dinner', subcat: 'drinks', price: 180 },
-    { name: 'Горячий шоколад', category: 'dinner', subcat: 'drinks', price: 250 },
-    // Минибар
-    { name: 'Кока-кола 0.33', category: 'minibar', subcat: null, price: 150 },
-    { name: 'Вода Evian 0.5', category: 'minibar', subcat: null, price: 120 },
-    { name: 'Пиво Paulaner 0.5', category: 'minibar', subcat: null, price: 320 },
-    { name: 'Чипсы Lays', category: 'minibar', subcat: null, price: 180 },
+    { name: 'Чай черный', category: 'dinner', subcat: 'drinks', price: 123 },
+    { name: 'Чай зеленый', category: 'dinner', subcat: 'drinks', price: 123 },
+    { name: 'Компот ягодный микс', category: 'dinner', subcat: 'drinks', price: 123 },
+    { name: 'Горячий шоколад', category: 'dinner', subcat: 'drinks', price: 123 },
   ];
 
   for (const item of menuItems) {

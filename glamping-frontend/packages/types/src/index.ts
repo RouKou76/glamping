@@ -19,7 +19,7 @@ export type TaskStatus =
 
 export type MenuCategory = 'breakfast' | 'lunch' | 'dinner' | 'minibar'
 
-export type MenuSubcategory = 'appetizers' | 'hot' | 'sides' | 'desserts' | 'drinks' | null
+export type MenuSubcategory = 'appetizers' | 'first' | 'hot' | 'sides' | 'desserts' | 'drinks' | null
 
 export type MealPeriod = 'breakfast' | 'lunch' | 'dinner' | 'none'
 
