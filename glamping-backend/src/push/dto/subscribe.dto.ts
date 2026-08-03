@@ -12,5 +12,5 @@ export class SubscribeDto {
 
   @ApiProperty()
   @IsString()
-  p256da: string;
+  auth: string;
 }

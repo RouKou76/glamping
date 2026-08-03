@@ -20,32 +20,30 @@ function urlBase64ToUint8Array(base64: string): Uint8Array {
 async function setupPush(reg: ServiceWorkerRegistration) {
   try {
     const existing = await reg.pushManager.getSubscription()
-    if (existing) {
-      console.log('[Push] already subscribed, skipping')
-      return
+    let sub = existing
+    if (!sub) {
+      const res = await fetch('/api/push/vapid-key')
+      if (!res.ok) return
+      const json = await res.json()
+      const publicKey = json?.data?.publicKey ?? json?.publicKey
+      if (!publicKey) return
+
+      const permission = await Notification.requestPermission()
+      if (permission !== 'granted') {
+        console.log('[Push] permission denied')
+        return
+      }
+
+      sub = await reg.pushManager.subscribe({
+        applicationServerKey: urlBase64ToUint8Array(publicKey) as unknown as BufferSource,
+        userVisibleOnly: true,
+      })
     }
-
-    const res = await fetch('/api/push/vapid-key')
-    if (!res.ok) return
-    const json = await res.json()
-    const publicKey = json?.data?.publicKey ?? json?.publicKey
-    if (!publicKey) return
-
-    const permission = await Notification.requestPermission()
-    if (permission !== 'granted') {
-      console.log('[Push] permission denied')
-      return
-    }
-
-    const sub = await reg.pushManager.subscribe({
-      applicationServerKey: urlBase64ToUint8Array(publicKey) as unknown as BufferSource,
-      userVisibleOnly: true,
-    })
 
     const body = {
       endpoint: sub.endpoint,
       p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')!))),
-      p256da: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth')!))),
+      auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth')!))),
     }
 
     const subRes = await fetch('/api/push/subscribe', {

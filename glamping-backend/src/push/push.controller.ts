@@ -29,7 +29,7 @@ export class PushController {
   @Public()
   @ApiOperation({ summary: 'Subscribe to push notifications' })
   subscribe(@Body() dto: SubscribeDto) {
-    return this.pushService.subscribe(dto.endpoint, dto.p256dh, dto.p256da);
+    return this.pushService.subscribe(dto.endpoint, dto.p256dh, dto.auth);
   }
 
   @Delete('unsubscribe')

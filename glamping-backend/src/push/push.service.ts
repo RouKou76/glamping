@@ -34,11 +34,11 @@ export class PushService {
     return { initialized: this.initialized, subscriptions: count };
   }
 
-  async subscribe(endpoint: string, p256dh: string, p256da: string) {
+  async subscribe(endpoint: string, p256dh: string, auth: string) {
     await this.prisma.pushSubscription.upsert({
       where: { endpoint },
-      update: { p256dh, p256da },
-      create: { endpoint, p256dh, p256da },
+      update: { p256dh, auth },
+      create: { endpoint, p256dh, auth },
     });
     this.logger.log(`Push subscription added (${await this.prisma.pushSubscription.count()} total)`);
   }
@@ -80,7 +80,7 @@ export class PushService {
       const results = await Promise.allSettled(
         chunk.map((sub) =>
           webPush.sendNotification(
-            { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, p256da: sub.p256da } },
+            { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
             message,
           ).catch((err: any) => {
             this.logger.warn(`Push fail: ${sub.endpoint.substring(0, 50)}... ${err.statusCode || '?'} ${err.message || err}`);

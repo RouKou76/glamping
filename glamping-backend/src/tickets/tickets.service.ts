@@ -217,10 +217,6 @@ export class TicketsService {
       },
     });
 
-    const house = await this.prisma.house.findUnique({
-      where: { id: updated.houseId },
-    });
-
     const result = {
       id: updated.id,
       houseId: updated.houseId,
@@ -246,20 +242,6 @@ export class TicketsService {
       } catch (e) {
         // ignore — checkout may fail if already done
       }
-    }
-
-    if (dto.status) {
-      const statusLabels: Record<string, string> = {
-        in_progress: 'В работе',
-        done: 'Готово',
-        archived: 'В архив',
-      };
-      const label = statusLabels[dto.status] ?? dto.status;
-      void this.push.sendNotification({
-        title: 'Заявка обновлена',
-        body: `${TYPE_LABELS[result.type] ?? result.type} — Домик №${house?.number ?? '?'} → ${label}`,
-        url: '/admin/',
-      });
     }
 
     return result;

@@ -35,16 +35,17 @@ export async function subscribeToPush(): Promise<boolean> {
     const reg = await navigator.serviceWorker.ready
 
     const existing = await reg.pushManager.getSubscription()
-    if (existing) return true
+    let subscription = existing
+    if (!subscription) {
+      const keyRes = await fetch(`${API_BASE}/api/push/vapid-key`)
+      const { publicKey } = await keyRes.json()
+      if (!publicKey) return false
 
-    const keyRes = await fetch(`${API_BASE}/api/push/vapid-key`)
-    const { publicKey } = await keyRes.json()
-    if (!publicKey) return false
-
-    const subscription = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(publicKey),
-    })
+      subscription = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      })
+    }
 
     const sub = subscription.toJSON()
     await withRetry(() =>
@@ -54,7 +55,7 @@ export async function subscribeToPush(): Promise<boolean> {
         body: JSON.stringify({
           endpoint: sub.endpoint,
           p256dh: sub.keys?.p256dh ?? '',
-          p256da: sub.keys?.p256da ?? '',
+          auth: sub.keys?.auth ?? '',
         }),
       }).then(r => { if (!r.ok) throw new Error('Subscribe failed') })
     )
