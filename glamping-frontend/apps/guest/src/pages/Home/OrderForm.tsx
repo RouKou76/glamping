@@ -567,6 +567,17 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
             </div>
           )}
 
+          {Object.keys(errors).filter(k => k !== 'submit').length > 0 && (
+            <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl p-3 space-y-1">
+              <p className="text-sm font-bold text-red-600 dark:text-red-400">{t('validation.fixErrors')}</p>
+              {Object.entries(errors)
+                .filter(([k, msg]) => k !== 'submit' && msg)
+                .map(([key, msg]) => (
+                  <p key={key} className="text-xs text-red-500 dark:text-red-400">• {msg}</p>
+                ))}
+            </div>
+          )}
+
           <button onClick={handleSubmit} disabled={cooldown > 0}
             className="w-full bg-glamp-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-glamp-700 active:scale-95 transition-all shadow-md disabled:opacity-40 disabled:cursor-not-allowed">
             {cooldown > 0 ? `Подождите · ${cooldown}с` : t('food.submit')}

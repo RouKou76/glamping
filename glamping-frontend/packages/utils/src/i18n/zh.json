@@ -146,7 +146,8 @@
     "selectDish": "请至少选择一项",
     "offline": "无网络连接",
     "minAdvanceTime": "订餐需提前至少1小时",
-    "invalidTime": "请从可用时段中选择时间"
+    "invalidTime": "请从可用时段中选择时间",
+    "fixErrors": "请修正以下错误:"
   },
   "catalog": {
     "title": "目录",
