@@ -30,7 +30,7 @@ const TICKET_TYPES = [
   { key: 'towels', label: 'Полотенца' },
   { key: 'gates', label: 'Ворота' },
   { key: 'minibar', label: 'Мини-бар' },
-  { key: 'kupe', label: 'Купель' },
+  { key: 'kupe', label: 'Банный чан' },
   { key: 'custom', label: 'Кастомные' },
 ]
 

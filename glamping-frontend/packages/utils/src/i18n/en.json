@@ -13,7 +13,7 @@
     "transfer": "Transfer",
     "cleaning": "Cleaning",
     "towels": "Towel Replacement",
-    "kupe": "Hot Tub",
+    "kupe": "Wooden Hot Tub",
     "gates": "Open Gates",
     "andetta": "ANDETTA Products",
     "suveniry": "Souvenirs & Treats from Ivanovo",
@@ -92,15 +92,15 @@
     "futureOnly": "Please select a future time"
   },
   "kupe": {
-    "title": "Hot Tub",
-    "description": "Choose a convenient time for the hot tub.",
+    "title": "Wooden Hot Tub",
+    "description": "Choose a convenient time for the wooden hot tub.",
     "datetime": "Date and Time",
     "next": "Next",
     "back": "← Back",
     "submit": "Confirm",
     "readyHint": "Please be ready for the session at the scheduled time.",
     "success": "Request accepted!",
-    "successMsg": "Hot tub session has been scheduled.",
+    "successMsg": "Wooden hot tub session has been scheduled.",
     "required": "Please select date and time",
     "futureOnly": "Please select a future time"
   },

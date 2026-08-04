@@ -160,8 +160,8 @@ async function main() {
 
   // Create settings
   const settings = [
-    { key: 'title', value: 'Глэмпинг "Бренандетта"' },
-    { key: 'phone', value: '+7 (999) 123-45-67' },
+    { key: 'title', value: 'Глэмпинг "Бернандетта"' },
+    { key: 'phone', value: '+7 (906) 510-30-77' },
     { key: 'wifi_name', value: 'Glamp_Guest' },
     { key: 'wifi_password', value: 'forest2026' },
     { key: 'rules', value: '• Тихий час с 23:00 до 8:00\n• Курение только в отведённых местах\n• Выезд до 12:00' },
