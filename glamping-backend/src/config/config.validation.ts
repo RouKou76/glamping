@@ -6,6 +6,7 @@ export const configValidationSchema = Joi.object({
   JWT_EXPIRES_IN: Joi.string().default('15m'),
   REFRESH_EXPIRES_IN: Joi.string().default('7d'),
   COOKIE_SECURE: Joi.boolean().default(false),
+  MAX_SESSIONS_PER_USER: Joi.number().default(5),
   PORT: Joi.number().default(3000),
   FRONTEND_URL: Joi.string().default('http://localhost:5173'),
   VAPID_PUBLIC_KEY: Joi.string().allow('').optional(),

@@ -6,6 +6,8 @@ import { PrismaService } from '../common/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { LoginDto } from './dto/login.dto';
 
+const SESSION_CLEANUP_INTERVAL_MS = 60 * 60 * 1000;
+
 function sha256(input: string): string {
   return createHash('sha256').update(input).digest('hex');
 }
@@ -46,7 +48,16 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private config: ConfigService,
-  ) {}
+  ) {
+    const cleanup = setInterval(() => {
+      this.prisma.authSession
+        .deleteMany({ where: { expiresAt: { lt: new Date() } } })
+        .catch(() => {
+          /* ignore cleanup errors */
+        });
+    }, SESSION_CLEANUP_INTERVAL_MS);
+    cleanup.unref();
+  }
 
   async login(dto: LoginDto, userAgent?: string) {
     const user = await this.prisma.user.findUnique({
@@ -213,6 +224,23 @@ export class AuthService {
         userAgent: userAgent || null,
       },
     });
+
+    const maxSessions = this.config.get<number>('MAX_SESSIONS_PER_USER', 5);
+    if (maxSessions > 0) {
+      const sessions = await this.prisma.authSession.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'asc' },
+        select: { id: true },
+      });
+      if (sessions.length > maxSessions) {
+        const overflow = sessions
+          .slice(0, sessions.length - maxSessions)
+          .map((s) => s.id);
+        await this.prisma.authSession.deleteMany({
+          where: { id: { in: overflow } },
+        });
+      }
+    }
 
     return { accessToken, refreshToken };
   }
