@@ -10,9 +10,12 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import type { Response, Request } from 'express';
+import type { CookieOptions } from 'express';
+import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RateLimitGuard } from '../common/guards/rate-limit.guard';
 import { Public } from '../common/decorators/public.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { checkRateLimit } from './rate-limiter';
@@ -22,7 +25,20 @@ const REFRESH_COOKIE = 'glamp_refresh';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private config: ConfigService,
+  ) {}
+
+  private get cookieOptions(): CookieOptions {
+    return {
+      httpOnly: true,
+      secure: this.config.get('COOKIE_SECURE', false),
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/api',
+    };
+  }
 
   @Post('login')
   @Public()
@@ -48,13 +64,7 @@ export class AuthController {
     const userAgent = req.headers?.['user-agent'];
     const result = await this.authService.login(dto, userAgent);
 
-    res.cookie(REFRESH_COOKIE, result.refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/api',
-    });
+    res.cookie(REFRESH_COOKIE, result.refreshToken, this.cookieOptions);
 
     return {
       accessToken: result.accessToken,
@@ -64,6 +74,7 @@ export class AuthController {
 
   @Post('refresh')
   @Public()
+  @UseGuards(new RateLimitGuard(60, 60_000))
   @ApiOperation({ summary: 'Refresh tokens' })
   async refresh(
     @Req() req: { cookies?: Record<string, string> },
@@ -76,13 +87,7 @@ export class AuthController {
 
     const result = await this.authService.refresh(refreshToken);
 
-    res.cookie(REFRESH_COOKIE, result.refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/api',
-    });
+    res.cookie(REFRESH_COOKIE, result.refreshToken, this.cookieOptions);
 
     return {
       accessToken: result.accessToken,

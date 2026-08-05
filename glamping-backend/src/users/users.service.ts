@@ -69,7 +69,10 @@ export class UsersService {
     const data: Record<string, unknown> = {};
     if (dto.name) data.name = dto.name;
     if (dto.roleId) data.roleId = dto.roleId;
-    if (dto.password) data.passwordHash = await argon2.hash(dto.password);
+    if (dto.password) {
+      data.passwordHash = await argon2.hash(dto.password);
+      await this.prisma.authSession.deleteMany({ where: { userId: id } });
+    }
 
     return this.prisma.user.update({
       where: { id },
