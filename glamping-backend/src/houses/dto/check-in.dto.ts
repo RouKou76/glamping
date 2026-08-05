@@ -1,11 +1,10 @@
-import { IsInt, IsOptional, IsString, Min, Max } from 'class-validator';
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CheckInDto {
   @ApiPropertyOptional({ example: 2 })
   @IsInt()
   @Min(1)
-  @Max(20)
   @IsOptional()
   guestCount?: number;
 

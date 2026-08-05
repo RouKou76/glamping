@@ -152,8 +152,7 @@ export default function CheckIn() {
               <div className="flex items-center gap-4">
                 <button onClick={() => setFormGuests(g => Math.max(1, g - 1))} className="w-10 h-10 rounded-full border border-gray-200 dark:border-white/20 text-gray-600 dark:text-white flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-lg">−</button>
                 <span className="text-2xl font-bold text-gray-800 dark:text-white w-8 text-center">{formGuests}</span>
-                <button onClick={() => setFormGuests(g => Math.min(8, g + 1))} className="w-10 h-10 rounded-full bg-glamp-600 hover:bg-glamp-700 text-white flex items-center justify-center transition-colors text-lg">+</button>
-                <span className="text-xs text-gray-500 dark:text-white/50">от 1 до 8</span>
+                <button onClick={() => setFormGuests(g => g + 1)} className="w-10 h-10 rounded-full bg-glamp-600 hover:bg-glamp-700 text-white flex items-center justify-center transition-colors text-lg">+</button>
               </div>
             </div>
             <div>
