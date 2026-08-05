@@ -1,6 +1,14 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import { apiPost, apiGet, subscribeToPush, unsubscribeFromPush } from '@glamping/api'
 
+const AUTH_EVENT_KEY = 'glamp-auth-event'
+const TOKEN_KEY = 'glamp-token'
+const SESSION_STATE_KEY = 'glamp-session-state'
+
+function broadcastAuthEvent(type: 'login' | 'logout') {
+  localStorage.setItem(AUTH_EVENT_KEY, `${type}:${Date.now()}`)
+}
+
 interface User {
   id: string
   login: string
@@ -33,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const token = localStorage.getItem('glamp-token')
+    const token = localStorage.getItem(TOKEN_KEY)
     if (!token) {
       setLoading(false)
       return
@@ -43,21 +51,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(user)
         subscribeToPush().then(ok => console.log('[Push] subscription:', ok ? 'success' : 'failed'))
       })
-      .catch(() => localStorage.removeItem('glamp-token'))
+      .catch(() => localStorage.removeItem(TOKEN_KEY))
       .finally(() => setLoading(false))
+  }, [])
+
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== AUTH_EVENT_KEY || !e.newValue) return
+      if (e.newValue.startsWith('logout')) {
+        localStorage.setItem(SESSION_STATE_KEY, 'logged-out')
+        localStorage.removeItem(TOKEN_KEY)
+        setUser(null)
+      } else if (e.newValue.startsWith('login')) {
+        apiGet<User>('/api/auth/me')
+          .then(u => {
+            setUser(u)
+            if (window.location.pathname === '/admin/login') window.location.assign('/admin/')
+          })
+          .catch(() => localStorage.removeItem(TOKEN_KEY))
+      }
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
   }, [])
 
   const login = useCallback(async (login: string, password: string) => {
     const res = await apiPost<{ accessToken: string; user: User }>('/api/auth/login', { login, password })
-    localStorage.setItem('glamp-token', res.accessToken)
+    localStorage.setItem(SESSION_STATE_KEY, 'logged-in')
+    localStorage.setItem(TOKEN_KEY, res.accessToken)
     setUser(res.user)
+    broadcastAuthEvent('login')
     subscribeToPush().then(ok => console.log('[Push] subscription:', ok ? 'success' : 'failed'))
   }, [])
 
   const logout = useCallback(() => {
     unsubscribeFromPush()
     apiPost('/api/auth/logout', {}).catch(() => {})
-    localStorage.removeItem('glamp-token')
+    localStorage.setItem(SESSION_STATE_KEY, 'logged-out')
+    broadcastAuthEvent('logout')
+    localStorage.removeItem(TOKEN_KEY)
     setUser(null)
   }, [])
 

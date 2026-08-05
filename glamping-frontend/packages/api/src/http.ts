@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 const TOKEN_KEY = 'glamp-token'
+const SESSION_STATE_KEY = 'glamp-session-state'
 const REFRESH_LOCK_KEY = 'glamp-refreshing'
 const REFRESH_LOCK_TTL = 3_000
 const REFRESH_HEARTBEAT_MS = 1_000
@@ -62,6 +63,7 @@ async function doRefresh(owner: string): Promise<boolean> {
 
 async function tryRefreshToken(): Promise<boolean> {
   if (refreshPromise) return refreshPromise
+  if (localStorage.getItem(SESSION_STATE_KEY) === 'logged-out') return false
 
   refreshPromise = (async () => {
     let lastResult = false
