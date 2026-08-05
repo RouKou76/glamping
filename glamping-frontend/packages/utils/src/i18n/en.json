@@ -163,8 +163,9 @@
     "title": "Check-out",
     "confirmTitle": "Check-out from cottage",
     "confirmMessage": "Are you ready to check out? The administrator will inspect the cottage and return the deposit.",
+    "subtitle": "1 hour before check-out",
     "submit": "Confirm check-out",
-    "requested": "Request sent, please wait"
+    "requested": "The administrator will arrive within 1 hour"
   },
   "booking": {
     "selectTime": "Select time",

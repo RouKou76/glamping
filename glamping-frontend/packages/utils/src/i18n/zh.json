@@ -163,8 +163,9 @@
     "title": "退房",
     "confirmTitle": "退房离开",
     "confirmMessage": "您确定准备好退房了吗？管理员将检查小屋并退还押金。",
+    "subtitle": "退房前1小时",
     "submit": "确认退房",
-    "requested": "申请已发送，请等待"
+    "requested": "管理员将在一小时内到达"
   },
   "booking": {
     "selectTime": "请选择时间",
