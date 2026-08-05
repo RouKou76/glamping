@@ -55,49 +55,49 @@ async function main() {
   // Create menu items
   const menuItems = [
     // Завтрак — Основные блюда
-    { name: 'Оладьи со сметаной и джемом', category: 'breakfast', subcat: 'main', price: 123 },
-    { name: 'Омлет с сыром и помидорами', category: 'breakfast', subcat: 'main', price: 123 },
-    { name: 'Каша геркулесовая с маслом', category: 'breakfast', subcat: 'main', price: 123 },
-    { name: 'Комплект сосисок микс', category: 'breakfast', subcat: 'main', price: 123 },
+    { name: 'Оладьи со сметаной и джемом', category: 'breakfast', subcat: 'main', price: 320 },
+    { name: 'Омлет с сыром и помидорами', category: 'breakfast', subcat: 'main', price: 290 },
+    { name: 'Каша геркулесовая с маслом', category: 'breakfast', subcat: 'main', price: 190 },
+    { name: 'Комплект сосисок микс', category: 'breakfast', subcat: 'main', price: 350 },
     // Завтрак — Напитки
-    { name: 'Чай черный', category: 'breakfast', subcat: 'drinks', price: 123 },
-    { name: 'Чай зеленый', category: 'breakfast', subcat: 'drinks', price: 123 },
-    { name: 'Кофе', category: 'breakfast', subcat: 'drinks', price: 123 },
-    { name: 'Горячий шоколад', category: 'breakfast', subcat: 'drinks', price: 123 },
+    { name: 'Чай черный', category: 'breakfast', subcat: 'drinks', price: 120 },
+    { name: 'Чай зеленый', category: 'breakfast', subcat: 'drinks', price: 120 },
+    { name: 'Кофе', category: 'breakfast', subcat: 'drinks', price: 180 },
+    { name: 'Горячий шоколад', category: 'breakfast', subcat: 'drinks', price: 220 },
     // Обед — Закуски
-    { name: 'Салат из свежих овощей с сыром фета', category: 'lunch', subcat: 'appetizers', price: 123 },
-    { name: 'Винегрет', category: 'lunch', subcat: 'appetizers', price: 123 },
+    { name: 'Салат из свежих овощей с сыром фета', category: 'lunch', subcat: 'appetizers', price: 340 },
+    { name: 'Винегрет', category: 'lunch', subcat: 'appetizers', price: 230 },
     // Обед — Первое
-    { name: 'Уха по-финский с лососем', category: 'lunch', subcat: 'first', price: 123 },
-    { name: 'Суп вермишелевый', category: 'lunch', subcat: 'first', price: 123 },
+    { name: 'Уха по-финский с лососем', category: 'lunch', subcat: 'first', price: 450 },
+    { name: 'Суп вермишелевый', category: 'lunch', subcat: 'first', price: 280 },
     // Обед — Горячее
-    { name: 'Бифстроганов из индейки', category: 'lunch', subcat: 'hot', price: 123 },
-    { name: 'Шницель венский', category: 'lunch', subcat: 'hot', price: 123 },
+    { name: 'Бифстроганов из индейки', category: 'lunch', subcat: 'hot', price: 520 },
+    { name: 'Шницель венский', category: 'lunch', subcat: 'hot', price: 480 },
     // Обед — Гарнир
-    { name: 'Рис', category: 'lunch', subcat: 'sides', price: 123 },
-    { name: 'Пюре картофельное', category: 'lunch', subcat: 'sides', price: 123 },
+    { name: 'Рис', category: 'lunch', subcat: 'sides', price: 150 },
+    { name: 'Пюре картофельное', category: 'lunch', subcat: 'sides', price: 160 },
     // Обед — Напитки
-    { name: 'Чай черный', category: 'lunch', subcat: 'drinks', price: 123 },
-    { name: 'Чай зеленый', category: 'lunch', subcat: 'drinks', price: 123 },
-    { name: 'Компот ягодный микс', category: 'lunch', subcat: 'drinks', price: 123 },
-    { name: 'Горячий шоколад', category: 'lunch', subcat: 'drinks', price: 123 },
+    { name: 'Чай черный', category: 'lunch', subcat: 'drinks', price: 120 },
+    { name: 'Чай зеленый', category: 'lunch', subcat: 'drinks', price: 120 },
+    { name: 'Компот ягодный микс', category: 'lunch', subcat: 'drinks', price: 140 },
+    { name: 'Горячий шоколад', category: 'lunch', subcat: 'drinks', price: 220 },
     // Ужин — Закуски
-    { name: 'Салат овощной с зеленью', category: 'dinner', subcat: 'appetizers', price: 123 },
-    { name: 'Цезарь с креветками', category: 'dinner', subcat: 'appetizers', price: 123 },
+    { name: 'Салат овощной с зеленью', category: 'dinner', subcat: 'appetizers', price: 280 },
+    { name: 'Цезарь с креветками', category: 'dinner', subcat: 'appetizers', price: 560 },
     // Ужин — Горячее
-    { name: 'Крылышки запеченые', category: 'dinner', subcat: 'hot', price: 123 },
-    { name: 'Люля-кебаб мясо микс', category: 'dinner', subcat: 'hot', price: 123 },
+    { name: 'Крылышки запеченые', category: 'dinner', subcat: 'hot', price: 430 },
+    { name: 'Люля-кебаб мясо микс', category: 'dinner', subcat: 'hot', price: 490 },
     // Ужин — Гарнир
-    { name: 'Рис', category: 'dinner', subcat: 'sides', price: 123 },
-    { name: 'Картофель по-деревенски', category: 'dinner', subcat: 'sides', price: 123 },
+    { name: 'Рис', category: 'dinner', subcat: 'sides', price: 150 },
+    { name: 'Картофель по-деревенски', category: 'dinner', subcat: 'sides', price: 190 },
     // Ужин — Десерт
-    { name: 'Торт птичье молоко', category: 'dinner', subcat: 'desserts', price: 123 },
-    { name: 'Десерт тирамису', category: 'dinner', subcat: 'desserts', price: 123 },
+    { name: 'Торт птичье молоко', category: 'dinner', subcat: 'desserts', price: 330 },
+    { name: 'Десерт тирамису', category: 'dinner', subcat: 'desserts', price: 350 },
     // Ужин — Напитки
-    { name: 'Чай черный', category: 'dinner', subcat: 'drinks', price: 123 },
-    { name: 'Чай зеленый', category: 'dinner', subcat: 'drinks', price: 123 },
-    { name: 'Компот ягодный микс', category: 'dinner', subcat: 'drinks', price: 123 },
-    { name: 'Горячий шоколад', category: 'dinner', subcat: 'drinks', price: 123 },
+    { name: 'Чай черный', category: 'dinner', subcat: 'drinks', price: 120 },
+    { name: 'Чай зеленый', category: 'dinner', subcat: 'drinks', price: 120 },
+    { name: 'Компот ягодный микс', category: 'dinner', subcat: 'drinks', price: 140 },
+    { name: 'Горячий шоколад', category: 'dinner', subcat: 'drinks', price: 220 },
   ];
 
   for (const item of menuItems) {
@@ -111,11 +111,16 @@ async function main() {
           price: item.price,
         },
       });
-    } else if (item.subcat && !existing.subcat) {
-      await prisma.menuItem.update({
-        where: { id: existing.id },
-        data: { subcat: item.subcat as any },
-      });
+    } else {
+      const updateData: any = {};
+      if (item.subcat && !existing.subcat) updateData.subcat = item.subcat as any;
+      if (existing.price !== item.price) updateData.price = item.price;
+      if (Object.keys(updateData).length > 0) {
+        await prisma.menuItem.update({
+          where: { id: existing.id },
+          data: updateData,
+        });
+      }
     }
   }
 
