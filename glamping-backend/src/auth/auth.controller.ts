@@ -29,15 +29,24 @@ export class AuthController {
   @ApiOperation({ summary: 'Login' })
   async login(
     @Body() dto: LoginDto,
-    @Req() req: { ip?: string; connection?: { remoteAddress?: string } },
+    @Req()
+    req: {
+      ip?: string;
+      headers?: Record<string, string>;
+      connection?: { remoteAddress?: string };
+    },
     @Res({ passthrough: true }) res: Response,
   ) {
     const ip = req.ip || req.connection?.remoteAddress || 'unknown';
     const { allowed, retryAfter } = checkRateLimit(ip);
     if (!allowed) {
-      throw new HttpException(`Too many attempts. Retry after ${retryAfter}s`, 429);
+      throw new HttpException(
+        `Too many attempts. Retry after ${retryAfter}s`,
+        429,
+      );
     }
-    const result = await this.authService.login(dto);
+    const userAgent = req.headers?.['user-agent'];
+    const result = await this.authService.login(dto, userAgent);
 
     res.cookie(REFRESH_COOKIE, result.refreshToken, {
       httpOnly: true,
@@ -83,7 +92,12 @@ export class AuthController {
   @Post('logout')
   @Public()
   @ApiOperation({ summary: 'Logout' })
-  async logout(@Res({ passthrough: true }) res: Response) {
+  async logout(
+    @Req() req: { cookies?: Record<string, string> },
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const refreshToken = req.cookies?.[REFRESH_COOKIE];
+    await this.authService.logout(refreshToken);
     res.clearCookie(REFRESH_COOKIE, { path: '/api' });
     return { success: true };
   }

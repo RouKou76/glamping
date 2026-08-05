@@ -1,5 +1,5 @@
-import { IsString, IsOptional, MinLength } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, MinLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -21,9 +21,4 @@ export class CreateUserDto {
   @IsString()
   @MinLength(1)
   roleId: string;
-
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  refreshToken?: string;
 }
