@@ -17,14 +17,6 @@ interface UseApiOptions {
 
 let refreshPromise: Promise<boolean> | null = null
 
-function acquireRefreshLock(): boolean {
-  const now = Date.now()
-  const existing = Number(localStorage.getItem(REFRESH_LOCK_KEY) || 0)
-  if (existing && now - existing < REFRESH_LOCK_TTL) return false
-  localStorage.setItem(REFRESH_LOCK_KEY, String(now))
-  return true
-}
-
 function releaseRefreshLock() {
   localStorage.removeItem(REFRESH_LOCK_KEY)
 }
@@ -49,9 +41,21 @@ function waitForOtherRefresh(): Promise<boolean> {
   })
 }
 
+async function tryAcquireLock(): Promise<boolean> {
+  const owner = localStorage.getItem(REFRESH_LOCK_KEY)
+  if (owner) {
+    const ts = Number(owner.split(':')[0])
+    if (!Number.isNaN(ts) && Date.now() - ts < REFRESH_LOCK_TTL) return false
+  }
+  const mine = `${Date.now()}:${Math.random().toString(36).slice(2)}`
+  localStorage.setItem(REFRESH_LOCK_KEY, mine)
+  await new Promise((r) => setTimeout(r, 50))
+  return localStorage.getItem(REFRESH_LOCK_KEY) === mine
+}
+
 async function tryRefreshToken(): Promise<boolean> {
   if (refreshPromise) return refreshPromise
-  if (!acquireRefreshLock()) return waitForOtherRefresh()
+  if (!(await tryAcquireLock())) return waitForOtherRefresh()
 
   refreshPromise = (async () => {
     try {
