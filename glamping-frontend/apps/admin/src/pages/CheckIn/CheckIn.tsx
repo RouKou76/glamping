@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useApi, apiPost } from '@glamping/api'
 import type { House, GuestSession, Lang } from '@glamping/types'
 import { ConfirmDialog } from '@glamping/ui'
@@ -143,7 +144,7 @@ export default function CheckIn() {
           ))}</div>
         </section>
       )}
-      {showForm && selectedHouse && (
+      {showForm && selectedHouse && createPortal(
         <div className="fixed inset-0 z-40 bg-black/60 flex items-end" onClick={() => setShowForm(false)}>
           <div className="w-full bg-gray-50 dark:bg-[#1a1d27] rounded-t-3xl p-6 space-y-5 animate-slide-up" onClick={e => e.stopPropagation()}>
             <h3 className="text-xl font-bold text-gray-800 dark:text-white">Заселение — Домик №{selectedHouse.number}</h3>
@@ -164,9 +165,10 @@ export default function CheckIn() {
               <button onClick={handleCheckIn} className="py-2.5 rounded-xl bg-glamp-600 hover:bg-glamp-700 text-white text-sm font-bold transition-colors active:scale-95">Заселить</button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
-      {tokenModal && (
+      {tokenModal && createPortal(
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setTokenModal(null)}>
           <div className="w-full max-w-sm bg-white dark:bg-[#1a1d27] rounded-2xl p-6 space-y-4 shadow-xl" onClick={e => e.stopPropagation()}>
             <h3 className="text-lg font-bold text-gray-800 dark:text-white text-center">Настройка планшета</h3>
@@ -189,7 +191,8 @@ export default function CheckIn() {
             <p className="text-xs text-gray-400 dark:text-white/40 text-center">Введите этот код на планшете гостя</p>
             <button onClick={() => setTokenModal(null)} className="w-full py-2 text-xs text-gray-500 dark:text-white/50 hover:text-gray-700 dark:hover:text-white/70">Закрыть</button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
       <ConfirmDialog open={!!checkoutId} title="Выселить домик?" message="Домик будет освобождён, чат очищен." confirmLabel="Выселить" onConfirm={handleCheckoutConfirm} onClose={() => setCheckoutId(null)} />
       <ConfirmDialog open={!!tabletHouse} title="Настроить планшет?" message="Будет сгенерирована новая ссылка для планшета." confirmLabel="Настроить" variant="primary" onConfirm={confirmSetupTablet} onClose={() => setTabletHouse(null)} />

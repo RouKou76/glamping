@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useApi, apiPost, apiDelete } from '@glamping/api'
 import type { Service } from '@glamping/types'
 import { ConfirmDialog } from '@glamping/ui'
@@ -104,7 +105,7 @@ export default function Services() {
           </div>
         ))}
       </div>
-      {showForm && (
+      {showForm && createPortal(
         <div className="fixed inset-0 z-40 bg-black/60 flex items-end" onClick={() => setShowForm(false)}>
           <div className="w-full bg-gray-50 dark:bg-[#1a1d27] rounded-t-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-slide-up" onClick={e => e.stopPropagation()}>
             <h3 className="text-xl font-bold text-gray-800 dark:text-white">{editService ? 'Редактировать услугу' : 'Новая услуга'}</h3>
@@ -151,7 +152,8 @@ export default function Services() {
               <button onClick={handleSave} disabled={!formName.trim()} className="py-2.5 rounded-xl bg-glamp-600 hover:bg-glamp-700 disabled:opacity-30 text-white text-sm font-bold transition-colors active:scale-95">{editService ? 'Сохранить' : 'Создать'}</button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
       <ConfirmDialog open={!!deleteId} title="Удалить услугу?" message="Услуга будет удалена безвозвратно." confirmLabel="Удалить" onConfirm={handleDeleteConfirm} onClose={() => setDeleteId(null)} />
     </div>

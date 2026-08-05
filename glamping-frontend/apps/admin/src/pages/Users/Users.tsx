@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useApi, apiPost, apiDelete } from '@glamping/api'
 import { ConfirmDialog } from '@glamping/ui'
 
@@ -85,7 +86,7 @@ export default function Users() {
         ))}
         {users.length === 0 && <p className="text-center text-gray-400 dark:text-white/30 text-sm py-8">Нет пользователей</p>}
       </div>
-      {showForm && (
+      {showForm && createPortal(
         <div className="fixed inset-0 z-40 bg-black/60 flex items-end" onClick={() => setShowForm(false)}>
           <div className="w-full bg-gray-50 dark:bg-[#1a1d27] rounded-t-3xl p-6 space-y-4 animate-slide-up" onClick={e => e.stopPropagation()}>
             <h3 className="text-xl font-bold text-gray-800 dark:text-white">{editUser ? 'Редактировать пользователя' : 'Новый пользователь'}</h3>
@@ -118,7 +119,8 @@ export default function Users() {
               <button onClick={handleSave} className="py-2.5 rounded-xl bg-glamp-600 hover:bg-glamp-700 text-white text-sm font-bold transition-colors active:scale-95">{editUser ? 'Сохранить' : 'Создать'}</button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
       <ConfirmDialog open={!!deleteId} title="Удалить пользователя?" message="Пользователь будет удалён безвозвратно." confirmLabel="Удалить" onConfirm={handleDelete} onClose={() => setDeleteId(null)} />
     </div>

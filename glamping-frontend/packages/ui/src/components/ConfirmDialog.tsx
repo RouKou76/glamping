@@ -1,4 +1,5 @@
 import React from 'react'
+import { createPortal } from 'react-dom'
 
 export interface ConfirmDialogProps {
   open: boolean
@@ -21,7 +22,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 }) => {
   if (!open) return null
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
       <div className="bg-white dark:bg-[#1a1d27] rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center space-y-4 animate-slide-up border border-gray-200 dark:border-white/10" onClick={e => e.stopPropagation()}>
         <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto ${variant === 'danger' ? 'bg-red-100 dark:bg-red-500/20 text-red-500' : 'bg-glamp-100 dark:bg-glamp-500/20 text-glamp-600'}`}>
@@ -46,6 +47,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

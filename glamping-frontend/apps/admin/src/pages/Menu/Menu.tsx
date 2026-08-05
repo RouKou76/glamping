@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useApi, apiPost, apiDelete } from '@glamping/api'
 import type { MenuItem, MenuCategory, MenuSubcategory } from '@glamping/types'
 import { ConfirmDialog } from '@glamping/ui'
@@ -132,7 +133,7 @@ export default function Menu() {
         </div>
       )}
 
-      {showForm && (
+      {showForm && createPortal(
         <div className="fixed inset-0 z-40 bg-black/60 flex items-end" onClick={() => setShowForm(false)}>
           <div className="w-full bg-gray-50 dark:bg-[#1a1d27] rounded-t-3xl p-6 space-y-4 animate-slide-up" onClick={e => e.stopPropagation()}>
             <h3 className="text-xl font-bold text-gray-800 dark:text-white">{editItem ? 'Редактировать блюдо' : 'Новое блюдо'}</h3>
@@ -154,7 +155,8 @@ export default function Menu() {
               <button onClick={handleSave} disabled={!formName.trim() || !formPrice} className="py-2.5 rounded-xl bg-glamp-600 hover:bg-glamp-700 disabled:opacity-30 text-white text-sm font-bold transition-colors active:scale-95">{editItem ? 'Сохранить' : 'Добавить'}</button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
       <ConfirmDialog open={!!deleteId} title="Удалить блюдо?" message="Блюдо будет удалено из меню безвозвратно." confirmLabel="Удалить" onConfirm={handleDeleteConfirm} onClose={() => setDeleteId(null)} />
     </div>
