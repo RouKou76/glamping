@@ -49,6 +49,7 @@ export default function Home() {
         { type: 'menu', key: 'items', items: items.filter(i => i.category !== 'minibar'), required: true },
       ],
       message: t('food.successMsg'),
+      hint: t('food.mealIncluded'),
     },
     transfer: {
       title: t('transfer.title'),

@@ -51,7 +51,8 @@
     "included": "included",
     "extra": "extra",
     "extraDish": "Extra item (additional charge)",
-    "main": "Main Dishes"
+    "main": "Main Dishes",
+    "mealIncluded": "Meals are included in the price. You may choose one dish from each menu category for each guest in the house. Dishes beyond the number of guests are charged separately."
   },
   "minibar": {
     "title": "Minibar Refill",
