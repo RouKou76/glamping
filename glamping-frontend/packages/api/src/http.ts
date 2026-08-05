@@ -3,8 +3,10 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 const TOKEN_KEY = 'glamp-token'
 const REFRESH_LOCK_KEY = 'glamp-refreshing'
-const REFRESH_LOCK_TTL = 5_000
-const REFRESH_WAIT_TIMEOUT = 12_000
+const REFRESH_LOCK_TTL = 3_000
+const REFRESH_HEARTBEAT_MS = 1_000
+const REFRESH_WAIT_TIMEOUT = 20_000
+const REFRESH_MAX_ATTEMPTS = 5
 
 interface ApiResponse<T> {
   data: T
@@ -17,63 +19,81 @@ interface UseApiOptions {
 
 let refreshPromise: Promise<boolean> | null = null
 
-function releaseRefreshLock() {
-  localStorage.removeItem(REFRESH_LOCK_KEY)
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
+
+function lockSuffix(value: string | null): string | null {
+  if (!value) return null
+  return value.split(':')[1] ?? null
 }
 
-function waitForOtherRefresh(): Promise<boolean> {
-  return new Promise((resolve) => {
-    const deadline = Date.now() + REFRESH_WAIT_TIMEOUT
-    const check = () => {
-      const lock = localStorage.getItem(REFRESH_LOCK_KEY)
-      const token = localStorage.getItem(TOKEN_KEY)
-      if (lock === null) {
-        resolve(Boolean(token))
-        return
-      }
-      if (Date.now() > deadline) {
-        resolve(Boolean(token))
-        return
-      }
-      setTimeout(check, 100)
+function lockAgeMs(value: string | null): number {
+  if (!value) return Infinity
+  const ts = Number(value.split(':')[0])
+  return Number.isNaN(ts) ? Infinity : Date.now() - ts
+}
+
+function isLockFresh(value: string | null): boolean {
+  return value !== null && lockAgeMs(value) < REFRESH_LOCK_TTL
+}
+
+async function doRefresh(owner: string): Promise<boolean> {
+  const heartbeat = setInterval(() => {
+    const cur = localStorage.getItem(REFRESH_LOCK_KEY)
+    if (lockSuffix(cur) === lockSuffix(owner)) {
+      localStorage.setItem(REFRESH_LOCK_KEY, `${Date.now()}:${lockSuffix(owner)}`)
     }
-    check()
-  })
-}
+  }, REFRESH_HEARTBEAT_MS)
 
-async function tryAcquireLock(): Promise<boolean> {
-  const owner = localStorage.getItem(REFRESH_LOCK_KEY)
-  if (owner) {
-    const ts = Number(owner.split(':')[0])
-    if (!Number.isNaN(ts) && Date.now() - ts < REFRESH_LOCK_TTL) return false
+  try {
+    const response = await fetch(`${API_BASE}/api/auth/refresh`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+    if (!response.ok) return false
+    const result: ApiResponse<{ accessToken: string }> = await response.json()
+    localStorage.setItem(TOKEN_KEY, result.data.accessToken)
+    return true
+  } catch {
+    return false
+  } finally {
+    clearInterval(heartbeat)
   }
-  const mine = `${Date.now()}:${Math.random().toString(36).slice(2)}`
-  localStorage.setItem(REFRESH_LOCK_KEY, mine)
-  await new Promise((r) => setTimeout(r, 50))
-  return localStorage.getItem(REFRESH_LOCK_KEY) === mine
 }
 
 async function tryRefreshToken(): Promise<boolean> {
   if (refreshPromise) return refreshPromise
-  if (!(await tryAcquireLock())) return waitForOtherRefresh()
 
   refreshPromise = (async () => {
-    try {
-      const response = await fetch(`${API_BASE}/api/auth/refresh`, {
-        method: 'POST',
-        credentials: 'include',
-      })
-      if (!response.ok) return false
-      const result: ApiResponse<{ accessToken: string }> = await response.json()
-      localStorage.setItem(TOKEN_KEY, result.data.accessToken)
-      return true
-    } catch {
-      return false
-    } finally {
-      releaseRefreshLock()
-      refreshPromise = null
+    let lastResult = false
+    const totalDeadline = Date.now() + REFRESH_WAIT_TIMEOUT
+    for (let attempt = 0; attempt < REFRESH_MAX_ATTEMPTS && Date.now() < totalDeadline; attempt++) {
+      const lock = localStorage.getItem(REFRESH_LOCK_KEY)
+
+      if (!isLockFresh(lock)) {
+        const mine = `${Date.now()}:${Math.random().toString(36).slice(2)}`
+        localStorage.setItem(REFRESH_LOCK_KEY, mine)
+        await sleep(60)
+        if (localStorage.getItem(REFRESH_LOCK_KEY) === mine) {
+          lastResult = await doRefresh(mine)
+          localStorage.removeItem(REFRESH_LOCK_KEY)
+          return lastResult
+        }
+        continue
+      }
+
+      const tokenBefore = localStorage.getItem(TOKEN_KEY)
+      while (Date.now() < totalDeadline) {
+        const cur = localStorage.getItem(REFRESH_LOCK_KEY)
+        if (cur === null || !isLockFresh(cur)) break
+        await sleep(100)
+      }
+      lastResult = localStorage.getItem(TOKEN_KEY) !== tokenBefore
+      if (lastResult) return true
     }
-  })()
+    return lastResult
+  })().finally(() => {
+    refreshPromise = null
+  })
 
   return refreshPromise
 }
