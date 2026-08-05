@@ -1,20 +1,20 @@
 {
   "nav": {
     "services": "服务",
-    "chat": "联系",
+    "chat": "聊天",
     "info": "信息"
   },
   "home": {
-    "title": "订购服务",
-    "house": "小屋",
+    "title": "预订服务",
+    "house": "木屋",
     "food": "订餐",
     "minibar": "迷你吧补充",
     "transfer": "接送服务",
     "cleaning": "清洁服务",
     "towels": "更换毛巾",
     "kupe": "木桶浴",
-    "andetta": "ANDETTA 产品",
-    "suveniry": "伊万诺沃纪念品和美食",
+    "andetta": "ANDETTA 产品系列",
+    "suveniry": "伊万诺沃特产",
     "requestSent": "{{service}} 的申请已发送"
   },
   "food": {
@@ -29,16 +29,16 @@
     "breakfast": "早餐",
     "lunch": "午餐",
     "dinner": "晚餐",
-    "cabin": "送到小屋",
-    "gazebo": "送到凉亭",
+    "cabin": "送至木屋",
+    "gazebo": "送至凉亭",
     "next": "下一步",
     "back": "← 返回",
     "submit": "提交订单",
-    "subtotal": "共",
+    "subtotal": "已选",
     "total": "合计",
     "success": "订单已接受！",
-    "successMsg": "我们将为您准备并送达。",
-    "kitchenClosed": "厨房目前关闭",
+    "successMsg": "我们会尽快为您准备并送达。",
+    "kitchenClosed": "厨房暂未营业",
     "kitchenHours": "早餐: 08:00–10:00 · 午餐: 13:00–15:00 · 晚餐: 19:00–21:00",
     "required": "请选择时间",
     "selectTimeFirst": "请先选择送达时间",
@@ -64,27 +64,27 @@
     "destination": "目的地",
     "time": "出发时间",
     "priceHint": "35公里以内 — 500卢布，35–50公里 — 700卢布，超过50公里 — 1000卢布",
-    "successMsg": "司机将在指定时间到达。",
+    "successMsg": "司机会按时到达。",
     "searchCity": "输入城市名称...",
     "accuracyHint": "信息可能不准确。请联系管理员确认地址和最终价格。"
   },
   "cleaning": {
     "title": "清洁服务",
-    "successMsg": "清洁将在指定时间进行。"
+    "successMsg": "我们将在预约时间进行清洁。"
   },
   "kupe": {
     "title": "木桶浴",
-    "successMsg": "木桶浴已预订。"
+    "successMsg": "已成功预约木桶浴。"
   },
   "towels": {
     "title": "更换毛巾",
     "description": "我们将很快送来干净的毛巾。",
-    "confirm": "申请",
-    "success": "申请已接受！毛巾将被送达。"
+    "confirm": "提交申请",
+    "success": "请求已接受！毛巾将被送达。"
   },
   "gates": {
-    "title": "开门",
-    "description": "向管理员发送开门请求。",
+    "title": "打开大门",
+    "description": "向管理员发送打开大门的请求。",
     "confirm": "发送请求",
     "success": "请求已发送！请等待确认。"
   },
@@ -97,10 +97,10 @@
   "info": {
     "phone": "联系管理员",
     "wifi": "Wi-Fi 连接",
-    "network": "网络",
+    "network": "Wi-Fi名称",
     "password": "密码",
     "about": "关于我们",
-    "rules": "住宿规定",
+    "rules": "入住须知",
     "services": "我们的服务"
   },
   "confirm": {
@@ -123,13 +123,13 @@
   },
   "catalog": {
     "andettaTitle": "ANDETTA 产品目录",
-    "suveniryTitle": "伊万诺沃纪念品和美食",
+    "suveniryTitle": "伊万诺沃特产",
     "noCatalog": "目录暂未提供"
   },
   "checkout": {
     "title": "退房",
     "confirmTitle": "退房离开",
-    "confirmMessage": "您确定准备好退房了吗？管理员将检查小屋并退还押金。",
+    "confirmMessage": "您确定准备好退房了吗？管理员将检查木屋并退还押金。",
     "subtitle": "请在预计退房前1小时提交请求，管理员将在请求提交后一小时内到达。",
     "submit": "确认退房",
     "requested": "请求已发送\n请等待，管理员将在一小时内到达。"
