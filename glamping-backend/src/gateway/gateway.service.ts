@@ -57,7 +57,9 @@ export class GatewayService
         where: { id: houseId },
       });
       if (!house) {
-        this.logger.warn(`House connection rejected: invalid houseId ${houseId}`);
+        this.logger.warn(
+          `House connection rejected: invalid houseId ${houseId}`,
+        );
         return;
       }
       this.logger.log(`House ${house.number} connected: ${client.id}`);

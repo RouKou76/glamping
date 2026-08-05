@@ -40,7 +40,9 @@ export class TasksController {
     @CurrentUser() user?: { role?: { name: string; permissions: string[] } },
   ) {
     const perms = user?.role?.permissions ?? [];
-    const hasTicketAccess = perms.some(p => p === 'view_tickets' || p.startsWith('view_tickets:'));
+    const hasTicketAccess = perms.some(
+      (p) => p === 'view_tickets' || p.startsWith('view_tickets:'),
+    );
     if (!hasTicketAccess) {
       throw new ForbiddenException('Нет прав на просмотр заявок');
     }
@@ -79,7 +81,9 @@ export class TasksController {
       const hasTypeView = perms.includes(`view_tickets:${ticket.type}`);
 
       if (!isAdmin && !hasGlobalManage && !hasAllView && !hasTypeView) {
-        throw new ForbiddenException('Нет прав для управления этим типом заявок');
+        throw new ForbiddenException(
+          'Нет прав для управления этим типом заявок',
+        );
       }
     }
 
@@ -103,7 +107,9 @@ export class TasksController {
       const hasTypeView = perms.includes(`view_tickets:${ticket.type}`);
 
       if (!isAdmin && !hasGlobalManage && !hasAllView && !hasTypeView) {
-        throw new ForbiddenException('Нет прав для управления этим типом заявок');
+        throw new ForbiddenException(
+          'Нет прав для управления этим типом заявок',
+        );
       }
     }
 

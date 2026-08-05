@@ -21,7 +21,9 @@ export class CreateMenuItemDto {
   @IsEnum(['breakfast', 'lunch', 'dinner', 'minibar'])
   category: string;
 
-  @ApiPropertyOptional({ enum: ['appetizers', 'first', 'hot', 'sides', 'desserts', 'drinks', 'main'] })
+  @ApiPropertyOptional({
+    enum: ['appetizers', 'first', 'hot', 'sides', 'desserts', 'drinks', 'main'],
+  })
   @IsString()
   @IsOptional()
   subcat?: string;

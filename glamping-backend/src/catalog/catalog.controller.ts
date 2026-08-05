@@ -11,7 +11,13 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes, ApiProperty } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiProperty,
+} from '@nestjs/swagger';
 import type { Response } from 'express';
 import { join } from 'path';
 import { IsIn } from 'class-validator';
@@ -72,7 +78,10 @@ export class CatalogController {
       limits: { fileSize: 20 * 1024 * 1024 },
     }),
   )
-  async upload(@Param('catalogId') catalogId: string, @UploadedFile() file: Express.Multer.File) {
+  async upload(
+    @Param('catalogId') catalogId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     return this.catalogService.upload(catalogId, file.filename);
   }
 
@@ -81,7 +90,10 @@ export class CatalogController {
   @RequirePermissions('manage_catalog')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Switch active catalog PDF version' })
-  async switchVersion(@Param('catalogId') catalogId: string, @Body() dto: SwitchVersionDto) {
+  async switchVersion(
+    @Param('catalogId') catalogId: string,
+    @Body() dto: SwitchVersionDto,
+  ) {
     return this.catalogService.switchVersion(catalogId, dto.version);
   }
 }

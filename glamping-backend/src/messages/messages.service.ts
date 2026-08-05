@@ -62,7 +62,18 @@ export class MessagesService {
       orderBy: { checkInAt: 'desc' },
     });
 
-    const result: { sessionId: string; checkInAt: string | undefined; checkOutAt: string | undefined; messages: { id: string; sender: string; text: string; timestamp: string; read: boolean }[] }[] = [];
+    const result: {
+      sessionId: string;
+      checkInAt: string | undefined;
+      checkOutAt: string | undefined;
+      messages: {
+        id: string;
+        sender: string;
+        text: string;
+        timestamp: string;
+        read: boolean;
+      }[];
+    }[] = [];
     for (const session of sessions) {
       const messages = await this.prisma.chatMessage.findMany({
         where: { sessionId: session.id },
@@ -108,7 +119,9 @@ export class MessagesService {
     this.gateway.broadcastToAdmins('server:message:new', result);
 
     if (!this.gateway.hasConnectedAdmins()) {
-      const house = await this.prisma.house.findUnique({ where: { id: houseId } });
+      const house = await this.prisma.house.findUnique({
+        where: { id: houseId },
+      });
       void this.push.sendNotification({
         title: 'Новое сообщение',
         body: `Домик №${house?.number ?? '?'}: ${text.slice(0, 50)}`,

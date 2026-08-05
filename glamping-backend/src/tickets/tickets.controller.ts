@@ -42,7 +42,9 @@ export class TicketsController {
     @CurrentUser() user?: { role?: { name: string; permissions: string[] } },
   ) {
     const perms = user?.role?.permissions ?? [];
-    const hasTicketAccess = perms.some(p => p === 'view_tickets' || p.startsWith('view_tickets:'));
+    const hasTicketAccess = perms.some(
+      (p) => p === 'view_tickets' || p.startsWith('view_tickets:'),
+    );
     if (!hasTicketAccess) {
       throw new ForbiddenException('Нет прав на просмотр заявок');
     }

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { GatewayService } from '../gateway/gateway.service';
 import { PushService } from '../push/push.service';
@@ -87,28 +91,37 @@ export class TicketsService {
       }
     }
 
-    const matchName = dto.serviceName || (() => {
-      if (!dto.description) return null;
-      const m = dto.description.match(/^\[(.+?)\]/);
-      return m ? m[1] : null;
-    })();
+    const matchName =
+      dto.serviceName ||
+      (() => {
+        if (!dto.description) return null;
+        const m = dto.description.match(/^\[(.+?)\]/);
+        return m ? m[1] : null;
+      })();
 
     if (dto.type === 'custom' && dto.desiredAt && matchName) {
-      const service = await this.prisma.service.findFirst({ where: { name: matchName } });
+      const service = await this.prisma.service.findFirst({
+        where: { name: matchName },
+      });
       if (service) {
         const fields = service.fields as Record<string, unknown>;
         if (fields?.booking) {
           const limit = (fields.bookingLimit as number) ?? 1;
           const desiredDate = new Date(dto.desiredAt);
-          const slotTime = dto.slotTime
-            || `${String(desiredDate.getHours()).padStart(2, '0')}:${String(desiredDate.getMinutes()).padStart(2, '0')}`;
-          const slotStart = new Date(desiredDate); slotStart.setSeconds(0, 0);
-          const slotEnd = new Date(slotStart); slotEnd.setMinutes(slotEnd.getMinutes() + 1);
+          const slotTime =
+            dto.slotTime ||
+            `${String(desiredDate.getHours()).padStart(2, '0')}:${String(desiredDate.getMinutes()).padStart(2, '0')}`;
+          const slotStart = new Date(desiredDate);
+          slotStart.setSeconds(0, 0);
+          const slotEnd = new Date(slotStart);
+          slotEnd.setMinutes(slotEnd.getMinutes() + 1);
 
-          const nameMatch = { OR: [
-            { serviceName: matchName },
-            { description: { startsWith: `[${matchName}]` } },
-          ] };
+          const nameMatch = {
+            OR: [
+              { serviceName: matchName },
+              { description: { startsWith: `[${matchName}]` } },
+            ],
+          };
 
           const ticket = await this.prisma.$transaction(async (tx) => {
             const count = await tx.ticket.count({
@@ -120,7 +133,9 @@ export class TicketsService {
               },
             });
             if (count >= limit) {
-              throw new BadRequestException(`Слот ${slotTime} уже занят. Попробуйте другое время.`);
+              throw new BadRequestException(
+                `Слот ${slotTime} уже занят. Попробуйте другое время.`,
+              );
             }
             return tx.ticket.create({
               data: {
@@ -192,15 +207,19 @@ export class TicketsService {
 
     void this.gateway.broadcastToAdmins('server:ticket:created', result);
 
-    this.prisma.house.findUnique({ where: { id: dto.houseId } }).then((house) => {
-      const typeLabel =
-        dto.type === 'custom' && dto.description ? dto.description : (TYPE_LABELS[dto.type] ?? dto.type);
-      void this.push.sendNotification({
-        title: 'Новая заявка',
-        body: `${typeLabel} — Домик №${house?.number ?? '?'}`,
-        url: '/admin/',
+    this.prisma.house
+      .findUnique({ where: { id: dto.houseId } })
+      .then((house) => {
+        const typeLabel =
+          dto.type === 'custom' && dto.description
+            ? dto.description
+            : (TYPE_LABELS[dto.type] ?? dto.type);
+        void this.push.sendNotification({
+          title: 'Новая заявка',
+          body: `${typeLabel} — Домик №${house?.number ?? '?'}`,
+          url: '/admin/',
+        });
       });
-    });
 
     return result;
   }
@@ -236,7 +255,11 @@ export class TicketsService {
 
     void this.gateway.broadcastToAdmins('server:ticket:updated', result);
 
-    if (dto.status === 'done' && ticket.status !== 'done' && ticket.description === 'Заявка на выезд') {
+    if (
+      dto.status === 'done' &&
+      ticket.status !== 'done' &&
+      ticket.description === 'Заявка на выезд'
+    ) {
       try {
         await this.housesService.checkout(ticket.houseId);
       } catch (e) {

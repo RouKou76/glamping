@@ -39,8 +39,12 @@ export class CatalogService {
       current,
       previous,
       active: (active as 'current' | 'previous') || 'current',
-      currentExists: current ? existsSync(join(this.uploadsDir, current)) : false,
-      previousExists: previous ? existsSync(join(this.uploadsDir, previous)) : false,
+      currentExists: current
+        ? existsSync(join(this.uploadsDir, current))
+        : false,
+      previousExists: previous
+        ? existsSync(join(this.uploadsDir, previous))
+        : false,
     };
   }
 
@@ -79,7 +83,8 @@ export class CatalogService {
   async switchVersion(catalogId: string, version: 'current' | 'previous') {
     const info = await this.getInfo(catalogId);
     const filename = version === 'previous' ? info.previous : info.current;
-    if (!filename) throw new NotFoundException(`Version "${version}" not found`);
+    if (!filename)
+      throw new NotFoundException(`Version "${version}" not found`);
     await this.setSetting(`${catalogId}_active`, version);
     return this.getInfo(catalogId);
   }

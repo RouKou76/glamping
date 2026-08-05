@@ -38,10 +38,7 @@ export class ServicesCatalogController {
   @Public()
   @ApiOperation({ summary: 'Get booking availability for a service' })
   @ApiQuery({ name: 'date', required: true })
-  async getAvailability(
-    @Param('id') id: string,
-    @Query('date') date: string,
-  ) {
+  async getAvailability(@Param('id') id: string, @Query('date') date: string) {
     return this.servicesService.getAvailability(id, date);
   }
 

@@ -193,7 +193,9 @@ export class HousesService {
   }
 
   async checkoutRequest(houseId: string) {
-    const house = await this.prisma.house.findUnique({ where: { id: houseId } });
+    const house = await this.prisma.house.findUnique({
+      where: { id: houseId },
+    });
     if (!house) throw new NotFoundException('House not found');
 
     const session = await this.prisma.guestSession.findFirst({
