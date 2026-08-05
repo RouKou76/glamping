@@ -96,7 +96,7 @@ export default function Users() {
                 className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500 disabled:opacity-50" />
             </div>
             <div>
-              <label className="text-xs font-bold text-gray-600 dark:text-white/60 mb-1 block">{editUser ? 'Новый пароль (оставьте пустым)' : 'Пароль'}</label>
+              <label className="text-xs font-bold text-gray-600 dark:text-white/60 mb-1 block">{editUser ? 'Новый пароль (мин. 6 символов.) (Оставьте пустым чтобы не изменять)' : 'Пароль  (мин. 6 символов)'}</label>
               <input type="password" value={formPassword} onChange={e => setFormPassword(e.target.value)}
                 className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" />
             </div>

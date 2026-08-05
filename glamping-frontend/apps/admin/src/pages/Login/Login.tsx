@@ -30,7 +30,7 @@ export default function Login() {
         <div className="bg-white dark:bg-[#1a1d27] rounded-2xl shadow-lg border border-gray-200 dark:border-white/10 p-6 transition-colors">
           <div className="text-center mb-6">
             <div className="w-12 h-12 bg-glamp-100 dark:bg-glamp-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-glamp-600 dark:text-green-400"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-glamp-600 dark:text-green-400"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><polyline points="10 17 15 12 10 7" /><line x1="15" y1="12" x2="3" y2="12" /></svg>
             </div>
             <h1 className="text-xl font-bold text-gray-800 dark:text-white">Glamping Admin</h1>
             <p className="text-sm text-gray-500 dark:text-white/50 mt-1">Вход в панель управления</p>
