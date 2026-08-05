@@ -2,8 +2,7 @@
   "nav": {
     "services": "服务",
     "chat": "联系",
-    "info": "信息",
-    "catalog": "目录"
+    "info": "信息"
   },
   "home": {
     "title": "订购服务",
@@ -14,10 +13,9 @@
     "cleaning": "清洁服务",
     "towels": "更换毛巾",
     "kupe": "木桶浴",
-    "gates": "开门",
     "andetta": "ANDETTA 产品",
     "suveniry": "伊万诺沃纪念品和美食",
-    "additional": "其他"
+    "requestSent": "{{service}} 的申请已发送"
   },
   "food": {
     "title": "订餐",
@@ -59,50 +57,24 @@
     "title": "迷你吧补充",
     "description": "我们将尽快送达饮品和零食。",
     "confirm": "下单",
-    "success": "订单已接受！",
-    "successMsg": "我们将尽快送达。"
+    "success": "订单已接受！"
   },
   "transfer": {
     "title": "接送服务",
     "destination": "目的地",
-    "date": "日期",
     "time": "出发时间",
-    "next": "下一步",
-    "back": "← 返回",
-    "submit": "预约接送",
-    "chatHint": "找不到目的地？请在聊天中告诉我们。",
     "priceHint": "35公里以内 — 500卢布，35–50公里 — 700卢布，超过50公里 — 1000卢布",
-    "success": "请求已接受！",
     "successMsg": "司机将在指定时间到达。",
-    "required": "请选择出发时间",
     "searchCity": "输入城市名称...",
     "accuracyHint": "信息可能不准确。请联系管理员确认地址和最终价格。"
   },
   "cleaning": {
     "title": "清洁服务",
-    "description": "选择方便的时间——我们将清洁小屋。",
-    "datetime": "日期和时间",
-    "next": "下一步",
-    "back": "← 返回",
-    "submit": "确认",
-    "readyHint": "请在清洁期间准备好腾出小屋。",
-    "success": "请求已接受！",
-    "successMsg": "清洁将在指定时间进行。",
-    "required": "请选择日期和时间",
-    "futureOnly": "请选择未来的时间"
+    "successMsg": "清洁将在指定时间进行。"
   },
   "kupe": {
     "title": "木桶浴",
-    "description": "请选择适合木桶浴的时间。",
-    "datetime": "日期和时间",
-    "next": "下一步",
-    "back": "← 返回",
-    "submit": "确认",
-    "readyHint": "请在指定时间做好准备。",
-    "success": "请求已接受！",
-    "successMsg": "木桶浴已预订。",
-    "required": "请选择日期和时间",
-    "futureOnly": "请选择未来的时间"
+    "successMsg": "木桶浴已预订。"
   },
   "towels": {
     "title": "更换毛巾",
@@ -123,20 +95,16 @@
     "empty": "开始与管理员对话"
   },
   "info": {
-    "title": "Eco Glamp \"Forest Haven\"",
     "phone": "联系管理员",
     "wifi": "Wi-Fi 连接",
     "network": "网络",
     "password": "密码",
     "about": "关于我们",
     "rules": "住宿规定",
-    "aboutText": "欢迎来到我们的豪华露营地！在这里您可以享受大自然而不失舒适。我们的团队随时为您提供帮助。请注意，订餐需提前至少1小时。",
-    "services": "我们的服务",
-    "servicesText": "我们提供：菜单餐饮、接送服务、小屋清洁、迷你吧补充和按需提供干净毛巾。"
+    "services": "我们的服务"
   },
   "confirm": {
     "cancel": "取消",
-    "confirm": "确认",
     "close": "关闭"
   },
   "validation": {
@@ -147,17 +115,16 @@
     "offline": "无网络连接",
     "minAdvanceTime": "订餐需提前至少1小时",
     "invalidTime": "请从可用时段中选择时间",
-    "fixErrors": "请修正以下错误:"
+    "fixErrors": "请填写下面标出的字段",
+    "minMinutes": "请选择至少提前{{minutes}}分钟的时间",
+    "submitError": "发送失败",
+    "alreadyRequested": "无法再次申请退房",
+    "cooldown": "请稍候 · {{seconds}}秒"
   },
   "catalog": {
-    "title": "目录",
     "andettaTitle": "ANDETTA 产品目录",
     "suveniryTitle": "伊万诺沃纪念品和美食",
-    "noCatalog": "目录暂未提供",
-    "confirmTitle": "目录",
-    "confirmMessage": "打开目录？",
-    "open": "打开",
-    "back": "返回"
+    "noCatalog": "目录暂未提供"
   },
   "checkout": {
     "title": "退房",
@@ -177,5 +144,15 @@
   },
   "order": {
     "comment": "备注"
+  },
+  "layout": {
+    "noAccess": "无法访问",
+    "noAccessHint": "请联系管理员配置平板电脑。",
+    "contactAdmin": "联系管理员："
+  },
+  "pdf": {
+    "loading": "加载中...",
+    "pageCount": "共{{count}}页",
+    "error": "错误"
   }
 }

@@ -2,8 +2,7 @@
   "nav": {
     "services": "Services",
     "chat": "Chat",
-    "info": "Info",
-    "catalog": "Catalog"
+    "info": "Info"
   },
   "home": {
     "title": "Order Services",
@@ -14,10 +13,9 @@
     "cleaning": "Cleaning",
     "towels": "Towel Replacement",
     "kupe": "Wooden Hot Tub",
-    "gates": "Open Gates",
     "andetta": "ANDETTA Products",
     "suveniry": "Souvenirs & Treats from Ivanovo",
-    "additional": "Additional"
+    "requestSent": "Your request for {{service}} has been sent"
   },
   "food": {
     "title": "Food Order",
@@ -59,50 +57,24 @@
     "title": "Minibar Refill",
     "description": "We will deliver drinks and snacks shortly.",
     "confirm": "Order",
-    "success": "Order accepted!",
-    "successMsg": "We will deliver shortly."
+    "success": "Order accepted!"
   },
   "transfer": {
     "title": "Transfer",
     "destination": "Destination",
-    "date": "Date",
     "time": "Pickup Time",
-    "next": "Next",
-    "back": "← Back",
-    "submit": "Book Transfer",
-    "chatHint": "Can't find your destination? Write us in chat.",
     "priceHint": "Up to 35 km — 500 RUB, 35–50 km — 700 RUB, over 50 km — 1000 RUB",
-    "success": "Request accepted!",
     "successMsg": "Driver will arrive at the specified time.",
-    "required": "Please select pickup time",
     "searchCity": "Enter city name...",
     "accuracyHint": "Information may be inaccurate. Contact the administrator to confirm the address and final price."
   },
   "cleaning": {
     "title": "Cleaning",
-    "description": "Choose a convenient time — we will clean the cottage.",
-    "datetime": "Date and Time",
-    "next": "Next",
-    "back": "← Back",
-    "submit": "Confirm",
-    "readyHint": "Please be ready to vacate the cottage during cleaning.",
-    "success": "Request accepted!",
-    "successMsg": "Cleaning will be done at the specified time.",
-    "required": "Please select date and time",
-    "futureOnly": "Please select a future time"
+    "successMsg": "Cleaning will be done at the specified time."
   },
   "kupe": {
     "title": "Wooden Hot Tub",
-    "description": "Choose a convenient time for the wooden hot tub.",
-    "datetime": "Date and Time",
-    "next": "Next",
-    "back": "← Back",
-    "submit": "Confirm",
-    "readyHint": "Please be ready for the session at the scheduled time.",
-    "success": "Request accepted!",
-    "successMsg": "Wooden hot tub session has been scheduled.",
-    "required": "Please select date and time",
-    "futureOnly": "Please select a future time"
+    "successMsg": "Wooden hot tub session has been scheduled."
   },
   "towels": {
     "title": "Towel Replacement",
@@ -123,20 +95,16 @@
     "empty": "Start a conversation with the administrator"
   },
   "info": {
-    "title": "Eco Glamp \"Forest Haven\"",
     "phone": "Contact Administrator",
     "wifi": "Wi-Fi Connection",
     "network": "Network",
     "password": "Password",
     "about": "About Us",
     "rules": "House Rules",
-    "aboutText": "Welcome to our glamping! Enjoy nature without sacrificing comfort. Our team is always ready to help you. Please note that food orders must be placed at least 1 hour in advance.",
-    "services": "Our Services",
-    "servicesText": "We offer: menu dining, transfer services, cottage cleaning, minibar refills, and fresh towels on request."
+    "services": "Our Services"
   },
   "confirm": {
     "cancel": "Cancel",
-    "confirm": "Confirm",
     "close": "Close"
   },
   "validation": {
@@ -147,17 +115,16 @@
     "offline": "No network connection",
     "minAdvanceTime": "Food orders must be placed at least 1 hour in advance",
     "invalidTime": "Please select a time from the available periods",
-    "fixErrors": "Please fix the errors:"
+    "fixErrors": "Please complete the highlighted fields below",
+    "minMinutes": "Choose a time at least {{minutes}} minutes in advance",
+    "submitError": "Failed to send",
+    "alreadyRequested": "Checkout already requested",
+    "cooldown": "Please wait · {{seconds}}s"
   },
   "catalog": {
-    "title": "Catalog",
-    "andettaTitle": "ANDITTA Products",
+    "andettaTitle": "ANDETTA Products",
     "suveniryTitle": "Souvenirs & Treats from Ivanovo",
-    "noCatalog": "Catalog not yet available",
-    "confirmTitle": "Catalog",
-    "confirmMessage": "Open the catalog?",
-    "open": "Open",
-    "back": "Back"
+    "noCatalog": "Catalog not yet available"
   },
   "checkout": {
     "title": "Check-out",
@@ -177,5 +144,15 @@
   },
   "order": {
     "comment": "Comment"
+  },
+  "layout": {
+    "noAccess": "No access",
+    "noAccessHint": "Contact the administrator to set up the tablet.",
+    "contactAdmin": "Contact the administrator:"
+  },
+  "pdf": {
+    "loading": "Loading...",
+    "pageCount": "{{count}} p.",
+    "error": "error"
   }
 }

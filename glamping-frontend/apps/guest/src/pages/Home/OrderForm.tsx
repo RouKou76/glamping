@@ -177,8 +177,8 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
       }
       if (selected < minAllowed) {
         validationErrors.time = taskType === 'food'
-          ? 'Заказ еды возможен минимум за 1 час'
-          : `Выберите время не менее чем за ${GENERAL_MIN_ADVANCE_MINUTES} минут`
+          ? t('validation.minAdvanceTime')
+          : t('validation.minMinutes', { minutes: GENERAL_MIN_ADVANCE_MINUTES })
       }
     }
 
@@ -196,7 +196,7 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
       const minAllowed = new Date()
       minAllowed.setMinutes(minAllowed.getMinutes() + GENERAL_MIN_ADVANCE_MINUTES)
       if (selected < minAllowed) {
-        validationErrors.slot = `Выберите время не менее чем за ${GENERAL_MIN_ADVANCE_MINUTES} минут`
+        validationErrors.slot = t('validation.minMinutes', { minutes: GENERAL_MIN_ADVANCE_MINUTES })
       }
     }
 
@@ -254,7 +254,7 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
 
     apiPost('/api/tasks', payload)
       .then(() => { setStep('success'); setCooldown(5) })
-      .catch(() => { setErrors({ submit: 'Ошибка отправки' }) })
+      .catch(() => { setErrors({ submit: t('validation.submitError') }) })
   }
 
   const menuStep = steps.find(s => s.type === 'menu')
@@ -580,7 +580,7 @@ export function OrderForm({ open, title, steps, houseId, guestCount, transfers, 
 
           <button onClick={handleSubmit} disabled={cooldown > 0}
             className="w-full bg-glamp-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-glamp-700 active:scale-95 transition-all shadow-md disabled:opacity-40 disabled:cursor-not-allowed">
-            {cooldown > 0 ? `Подождите · ${cooldown}с` : t('food.submit')}
+            {cooldown > 0 ? t('validation.cooldown', { seconds: cooldown }) : t('food.submit')}
           </button>
         </div>
       )}

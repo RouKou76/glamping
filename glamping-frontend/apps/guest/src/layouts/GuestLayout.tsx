@@ -32,9 +32,9 @@ export default function GuestLayout() {
             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
         </div>
-        <h1 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Нет доступа</h1>
+        <h1 className="text-lg font-bold text-gray-800 dark:text-white mb-2">{t('layout.noAccess')}</h1>
         <p className="text-sm text-gray-500 dark:text-white/50 max-w-xs">
-          Свяжитесь с администратором для настройки планшета.
+          {t('layout.noAccessHint')}
         </p>
         {info.phone && (
           <a href={`tel:${info.phone}`}
@@ -57,7 +57,7 @@ export default function GuestLayout() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-red-700 dark:text-red-400">{t('validation.offline')}</p>
-            <p className="text-xs text-red-600 dark:text-red-300">Связь с администратором:</p>
+            <p className="text-xs text-red-600 dark:text-red-300">{t('layout.contactAdmin')}</p>
             <a href={`tel:${info.phone}`} className="text-sm text-red-600 dark:text-red-300 font-medium underline">{info.phone}</a>
           </div>
         </div>

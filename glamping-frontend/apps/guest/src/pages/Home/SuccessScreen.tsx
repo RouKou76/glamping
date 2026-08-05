@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface SuccessScreenProps {
   title: string
@@ -8,6 +9,7 @@ interface SuccessScreenProps {
 }
 
 export function SuccessScreen({ title, message, onClose, autoCloseMs = 5000 }: SuccessScreenProps) {
+  const { t } = useTranslation()
   const [remaining, setRemaining] = useState(autoCloseMs)
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export function SuccessScreen({ title, message, onClose, autoCloseMs = 5000 }: S
       <div className="relative">
         <button onClick={onClose}
           className="w-full py-2.5 rounded-2xl font-semibold transition-all active:scale-95 relative overflow-hidden border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-400 text-sm">
-          <span className="relative z-10">Закрыть</span>
+          <span className="relative z-10">{t('confirm.close')}</span>
         </button>
         <div className="absolute inset-0 rounded-2xl bg-glamp-600/20 dark:bg-green-500/20 transition-all duration-100 ease-linear pointer-events-none"
           style={{ width: `${progress * 100}%` }} />

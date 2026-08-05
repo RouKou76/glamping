@@ -97,7 +97,7 @@ export default function Home() {
     }
     steps.push({ type: 'textarea', key: 'comment', label: t('order.comment'), placeholder: service.name })
     const hint = service.showDescription && service.description ? service.description : undefined
-    return { title: service.name, steps, message: `Заявка «${service.name}» отправлена`, serviceName: service.name, hint }
+    return { title: service.name, steps, message: t('home.requestSent', { service: service.name }), serviceName: service.name, hint }
   }
 
   function showToast(msg: string) { setToast(msg); setTimeout(() => setToast(null), 3000) }
@@ -107,7 +107,7 @@ export default function Home() {
   function handleConfirm(type: ConfirmSheetType) {
     apiPost('/api/tasks', { houseId, type, description: t(`${type}.title`) })
       .then(() => showToast(t(`${type}.success`)))
-      .catch(() => showToast('Ошибка отправки'))
+      .catch(() => showToast(t('validation.submitError')))
   }
   function handleOrderSubmit(_data: Record<string, unknown>, message: string) { showToast(message) }
 
@@ -123,9 +123,9 @@ export default function Home() {
         setLocalCheckoutDone(false)
         const msg = err?.response?.data?.message || ''
         if (msg === 'Checkout already requested')
-          showToast('Невозможно повторно запросить выезд')
+          showToast(t('validation.alreadyRequested'))
         else
-          showToast('Ошибка отправки')
+          showToast(t('validation.submitError'))
       })
   }
 

@@ -10,7 +10,7 @@ export default function Catalog() {
   if (!catalogId) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center px-6">
-        <p className="text-gray-500 dark:text-gray-400 text-sm">Каталог не найден</p>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">{t('catalog.noCatalog')}</p>
       </div>
     )
   }
