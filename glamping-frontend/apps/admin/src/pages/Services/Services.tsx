@@ -21,6 +21,7 @@ export default function Services() {
   const [formBookingSlots, setFormBookingSlots] = useState('')
   const [formBookingLimit, setFormBookingLimit] = useState(1)
   const [formBookingSchedule, setFormBookingSchedule] = useState<{ date: string; slots: string }[]>([])
+  const [formExternalUrl, setFormExternalUrl] = useState('')
   const [formErrors, setFormErrors] = useState<{ name?: string }>({})
 
   function formatDisplayDate(iso: string) {
@@ -37,8 +38,8 @@ export default function Services() {
     return cleaned
   }
 
-  function openAdd() { setEditService(null); setFormName(''); setFormPrice(''); setFormIcon(''); setFormRequiresTime(true); setFormDescription(''); setFormShowDescription(false); setFormBooking(false); setFormBookingSlots(''); setFormBookingLimit(1); setFormBookingSchedule([]); setShowForm(true) }
-  function openEdit(service: Service) { setEditService(service); setFormName(service.name); setFormPrice(service.priceInfo ?? ''); setFormIcon(service.icon ?? ''); setFormRequiresTime(service.requiresTime); setFormDescription(service.description ?? ''); setFormShowDescription(service.showDescription ?? false); setFormBooking(service.booking ?? false); setFormBookingSlots(service.bookingSlots?.join(', ') ?? ''); setFormBookingLimit(service.bookingLimit ?? 1); setFormBookingSchedule((service.bookingSchedule ?? []).map(s => ({ date: s.date, slots: s.slots.join(', ') }))); setShowForm(true) }
+  function openAdd() { setEditService(null); setFormName(''); setFormPrice(''); setFormIcon(''); setFormRequiresTime(true); setFormDescription(''); setFormShowDescription(false); setFormBooking(false); setFormBookingSlots(''); setFormBookingLimit(1); setFormBookingSchedule([]); setFormExternalUrl(''); setShowForm(true) }
+  function openEdit(service: Service) { setEditService(service); setFormName(service.name); setFormPrice(service.priceInfo ?? ''); setFormIcon(service.icon ?? ''); setFormRequiresTime(service.requiresTime); setFormDescription(service.description ?? ''); setFormShowDescription(service.showDescription ?? false); setFormBooking(service.booking ?? false); setFormBookingSlots(service.bookingSlots?.join(', ') ?? ''); setFormBookingLimit(service.bookingLimit ?? 1); setFormBookingSchedule((service.bookingSchedule ?? []).map(s => ({ date: s.date, slots: s.slots.join(', ') }))); setFormExternalUrl(service.externalUrl ?? ''); setShowForm(true) }
 
   function handleSave() {
     if (!formName.trim()) { setFormErrors({ name: 'Введите название' }); return }
@@ -53,14 +54,15 @@ export default function Services() {
         bookingSlots: formBooking ? formBookingSlots.split(',').map(s => s.trim()).filter(Boolean) : [],
         bookingLimit: formBooking ? formBookingLimit : 1,
         bookingSchedule: formBooking ? formBookingSchedule.map(s => ({ date: s.date, slots: s.slots.split(',').map(x => x.trim()).filter(Boolean) })) : [],
+        externalUrl: formExternalUrl.trim() || undefined,
       }
     }
     if (editService) {
-      const updated = { ...editService, ...payload, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription, booking: formBooking, bookingSlots: payload.fields.bookingSlots, bookingLimit: payload.fields.bookingLimit, bookingSchedule: payload.fields.bookingSchedule }
+      const updated = { ...editService, ...payload, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription, booking: formBooking, bookingSlots: payload.fields.bookingSlots, bookingLimit: payload.fields.bookingLimit, bookingSchedule: payload.fields.bookingSchedule, externalUrl: payload.fields.externalUrl }
       setServices(prev => prev.map(s => s.id === editService.id ? updated : s))
       apiPost(`/api/services/${editService.id}`, payload).catch(() => {})
     } else {
-      const newService: Service = { id: `cs-${Date.now()}`, ...payload, active: true, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription, booking: formBooking, bookingSlots: payload.fields.bookingSlots, bookingLimit: payload.fields.bookingLimit, bookingSchedule: payload.fields.bookingSchedule }
+      const newService: Service = { id: `cs-${Date.now()}`, ...payload, active: true, requiresTime: formRequiresTime, description: formDescription.trim() || undefined, showDescription: formShowDescription, booking: formBooking, bookingSlots: payload.fields.bookingSlots, bookingLimit: payload.fields.bookingLimit, bookingSchedule: payload.fields.bookingSchedule, externalUrl: payload.fields.externalUrl }
       setServices(prev => [...prev, newService])
       apiPost('/api/services', { ...payload, active: true }).catch(() => {})
     }
@@ -89,7 +91,7 @@ export default function Services() {
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">{service.icon || '⭐'}</span>
-                <div><p className="text-sm font-bold text-gray-800 dark:text-white">{service.name}</p><p className="text-xs text-gray-500 dark:text-white/60 mt-0.5">{service.priceInfo ?? 'Цена не указана'}</p></div>
+                <div><p className="text-sm font-bold text-gray-800 dark:text-white">{service.name}</p><p className="text-xs text-gray-500 dark:text-white/60 mt-0.5">{service.priceInfo ?? 'Цена не указана'}</p>{service.externalUrl && <span className="inline-block mt-1 px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 text-[10px] font-bold">Внешняя ссылка</span>}</div>
               </div>
               <button onClick={() => toggleActive(service.id)} className={`w-11 h-6 rounded-full transition-colors relative shrink-0 ${service.active ? 'bg-glamp-600' : 'bg-gray-300 dark:bg-white/10'}`}><span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${service.active ? 'left-6' : 'left-1'}`} /></button>
             </div>
@@ -119,6 +121,7 @@ export default function Services() {
               <button onClick={() => setFormRequiresTime(p => !p)} className={`w-12 h-6 rounded-full transition-colors relative ${formRequiresTime ? 'bg-glamp-600' : 'bg-gray-300 dark:bg-white/10'}`}><span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formRequiresTime ? 'left-7' : 'left-1'}`} /></button>
             </div>
             <div><label className="text-sm font-bold text-gray-600 dark:text-white/60 mb-1 block">Описание</label><textarea value={formDescription} onChange={e => setFormDescription(e.target.value)} placeholder="Описание услуги для гостя..." rows={2} className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500 resize-none" /></div>
+            <div><label className="text-sm font-bold text-gray-600 dark:text-white/60 mb-1 block">Внешняя ссылка (URL)</label><input type="url" value={formExternalUrl} onChange={e => setFormExternalUrl(e.target.value)} placeholder="https://kion.ru" className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-glamp-500" /><p className="text-[10px] text-gray-400 dark:text-white/30 mt-1">Если указана — гость перейдёт на внешний сайт вместо формы заказа</p></div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600 dark:text-white/70">Показывать описание</span>
               <button onClick={() => setFormShowDescription(p => !p)} className={`w-12 h-6 rounded-full transition-colors relative ${formShowDescription ? 'bg-glamp-600' : 'bg-gray-300 dark:bg-white/10'}`}><span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formShowDescription ? 'left-7' : 'left-1'}`} /></button>

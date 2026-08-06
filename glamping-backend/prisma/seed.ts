@@ -143,6 +143,16 @@ async function main() {
         description: 'Прокат одного Квадроцикла 6000 руб./час, от двух квадроциклов 4000 руб./час. Экипировка инструктаж, фото/видеосьемка входят в стоимость.',
       },
     },
+    {
+      name: 'Кино (kion.ru)',
+      price: null,
+      icon: '🎬',
+      active: true,
+      assignedTo: 'admin',
+      fields: {
+        externalUrl: 'https://kion.ru',
+      },
+    },
   ];
 
   for (const svc of services) {

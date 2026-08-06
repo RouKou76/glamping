@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ThemeToggle } from '@glamping/ui'
+import { BottomSheet } from '@glamping/ui'
 import { useApi, apiPost } from '@glamping/api'
 import { useTask } from '../../contexts/TaskContext'
 import { useDevice } from '../../contexts/DeviceContext'
@@ -33,6 +34,7 @@ export default function Home() {
   const activeServices = useMemo(() => services?.filter(s => s.active) ?? [], [services])
   const [activeModal, setActiveModal] = useState<ActiveModal>(null)
   const [activeServiceConfig, setActiveServiceConfig] = useState<{ title: string; steps: OrderStep[]; message: string; serviceName: string; hint?: string } | null>(null)
+  const [externalTarget, setExternalTarget] = useState<Service | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
   const SERVICE_CONFIGS: Record<string, { title: string; steps: OrderStep[]; message: string; hint?: string }> = useMemo(() => {
@@ -178,7 +180,10 @@ export default function Home() {
             label={service.name}
             sublabel={service.priceInfo}
             color={SERVICE_COLORS[service.id] ?? 'bg-gray-600'}
-            onClick={() => { refetchServices(); setActiveServiceConfig(buildServiceConfig(service)) }}
+            onClick={() => {
+              if (service.externalUrl) { setExternalTarget(service); return }
+              refetchServices(); setActiveServiceConfig(buildServiceConfig(service))
+            }}
           />
         ))}
       </div>
@@ -215,6 +220,23 @@ export default function Home() {
           onClose={() => setActiveServiceConfig(null)}
           onSubmit={() => handleOrderSubmit({}, activeServiceConfig.message)}
         />
+      )}
+
+      {externalTarget && externalTarget.externalUrl && (
+        <BottomSheet open={true} onClose={() => setExternalTarget(null)} title={t('external.title')}>
+          <div className="p-5 space-y-4">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-500/20 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-300 mx-auto mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+              </div>
+              <p className="text-gray-600 dark:text-gray-400">{t('external.description', { service: externalTarget.name })}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <button onClick={() => setExternalTarget(null)} className="flex-1 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-400 py-3 rounded-2xl font-semibold hover:bg-gray-200 dark:hover:bg-white/20 transition-colors active:scale-95 text-sm">{t('confirm.cancel')}</button>
+              <button onClick={() => { window.location.href = externalTarget.externalUrl! }} className="flex-1 bg-blue-600 text-white py-3 rounded-2xl font-semibold hover:bg-blue-700 transition-colors active:scale-95 shadow-sm text-sm">{t('external.confirm')}</button>
+            </div>
+          </div>
+        </BottomSheet>
       )}
 
       {toast && (

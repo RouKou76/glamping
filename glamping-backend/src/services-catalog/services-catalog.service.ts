@@ -30,6 +30,7 @@ export class ServicesCatalogService {
         bookingSchedule:
           (fields?.bookingSchedule as { date: string; slots: string[] }[]) ||
           [],
+        externalUrl: (fields?.externalUrl as string) || undefined,
         jsonSchema: s.jsonSchema,
         active: s.active,
         assignedTo: s.assignedTo,

@@ -108,6 +108,11 @@
     "cancel": "取消",
     "close": "关闭"
   },
+  "external": {
+    "title": "外部网站",
+    "description": "即将打开外部网站「{{service}}」？您可以使用平板上的 ← 按钮返回菜单。",
+    "confirm": "打开"
+  },
   "validation": {
     "required": "请填写此字段",
     "selectTime": "请选择时间",
