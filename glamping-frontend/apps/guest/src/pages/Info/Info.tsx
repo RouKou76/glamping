@@ -20,7 +20,7 @@ export default function Info() {
   return (
     <div className="p-6 animate-slide-up">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">{info.title}</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 pl-16">{info.title}</h1>
         <ThemeToggle size="lg" />
       </div>
 

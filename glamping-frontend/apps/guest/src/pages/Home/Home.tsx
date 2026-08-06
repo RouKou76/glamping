@@ -135,7 +135,7 @@ export default function Home() {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-2">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">{t('home.title')}</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 pl-16">{t('home.title')}</h1>
         <ThemeToggle size="lg" />
       </div>
       <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">{t('home.house')}{houseNumber ? ` №${houseNumber}` : ''}</p>

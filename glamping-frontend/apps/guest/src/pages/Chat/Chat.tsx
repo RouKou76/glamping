@@ -55,7 +55,7 @@ export default function Chat() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="bg-white dark:bg-[#1a1d27] p-4 border-b border-gray-100 dark:border-white/10 shadow-sm flex items-center justify-between transition-colors">
+      <div className="bg-white dark:bg-[#1a1d27] p-4 pl-20 border-b border-gray-100 dark:border-white/10 shadow-sm flex items-center justify-between transition-colors">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-glamp-100 dark:bg-glamp-500/20 rounded-full flex items-center justify-center text-glamp-600 dark:text-green-400">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
